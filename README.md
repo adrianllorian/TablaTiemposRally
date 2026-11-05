@@ -75,7 +75,7 @@ Una sola URL para todos: los participantes entran con una contraseña, ven la ta
 4. Abre una terminal en esa carpeta y ejecuta:
 
    ```bash
-   java -jar tabla-tiempos-0.0.1-SNAPSHOT.jar
+   java -jar tabla-tiempos-1.0.0.jar
    ```
 
 5. Abre en el navegador:
@@ -97,7 +97,7 @@ Para detener el servidor, pulsa `Ctrl + C` en la terminal.
 Por defecto usa el `8888`. Puedes cambiarlo al arrancar:
 
 ```bash
-java -jar tabla-tiempos-0.0.1-SNAPSHOT.jar --server.port=9090
+java -jar tabla-tiempos-1.0.0.jar --server.port=9090
 ```
 
 También se puede fijar en `backend/src/main/resources/application.properties` si compilas desde el código.
@@ -268,13 +268,13 @@ Windows:
 El JAR se genera en:
 
 ```text
-backend/target/tabla-tiempos-0.0.1-SNAPSHOT.jar
+backend/target/tabla-tiempos-1.0.0.jar
 ```
 
 Y se ejecuta igual que el descargado:
 
 ```bash
-java -jar backend/target/tabla-tiempos-0.0.1-SNAPSHOT.jar
+java -jar backend/target/tabla-tiempos-1.0.0.jar
 ```
 
 ---
@@ -420,7 +420,7 @@ Lo recomendado es adjuntar el JAR a una **Release**:
 3. En GitHub, entra en **Releases → Draft a new release**, selecciona el tag y adjunta el archivo:
 
    ```text
-   backend/target/tabla-tiempos-0.0.1-SNAPSHOT.jar
+   backend/target/tabla-tiempos-1.0.0.jar
    ```
 
 4. Publica la release.

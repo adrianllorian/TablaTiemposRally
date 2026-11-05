@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.tablatiempos</groupId>
 	<artifactId>tabla-tiempos</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>TablaTiempos</name>
 	<description/>
 	<url/>
