@@ -1,0 +1,45 @@
+# Tabla Tiempos Rally — stack para Portainer
+#
+# El JAR debe estar en el host en:
+#   /home/ubuntu/tablaTiempos/tabla-tiempos-1.0.0.jar
+#
+# Los datos (base de datos H2 y logo) se guardarán en:
+#   /home/ubuntu/tablaTiempos/data
+#
+# En Portainer: Stacks → Add stack → Web editor → pegar este contenido.
+
+services:
+  tabla-tiempos:
+    image: eclipse-temurin:21-jre
+    container_name: tabla-tiempos
+    restart: unless-stopped
+
+    # El JAR y la carpeta data viven en el host, dentro de /home/ubuntu/tablaTiempos
+    working_dir: /app
+    volumes:
+      - /home/ubuntu/tablaTiempos:/app
+
+    # El nombre debe coincidir con el JAR que dejes en la carpeta
+    command:
+      - java
+      - -jar
+      - /app/tabla-tiempos-1.0.0.jar
+
+    ports:
+      - "8888:8888"
+
+    environment:
+      TZ: Europe/Madrid
+
+    # Ejecuta como el usuario ubuntu (UID/GID 1000) para que los archivos
+    # de data/ no queden propiedad de root.
+    user: "1000:1000"
+
+    # Margen para que Spring Boot cierre H2 correctamente
+    stop_grace_period: 30s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
