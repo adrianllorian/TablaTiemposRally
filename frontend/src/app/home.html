@@ -1,0 +1,657 @@
+@if (checking()) {
+  <div class="login">
+    <div class="login-card">
+      <div class="logo big">
+        @if (logoUrl()) {
+          <img [src]="logoUrl()!" alt="Logo">
+        } @else {
+          TT
+        }
+      </div>
+      <h1>{{ appName() }}</h1>
+      <p>Cargando…</p>
+    </div>
+  </div>
+} @else if (setupMode()) {
+  <div class="login">
+    <div class="login-card">
+      <div class="logo big">
+        @if (logoUrl()) {
+          <img [src]="logoUrl()!" alt="Logo">
+        } @else {
+          TT
+        }
+      </div>
+      <h1>{{ appName() }}</h1>
+      <p>Pizarra de tiempos oficial · primera configuración</p>
+      <form (submit)="setup(); $event.preventDefault()">
+        <label for="setupPassword">Contraseña de la aplicación</label>
+        <input
+          id="setupPassword"
+          name="setupPassword"
+          type="password"
+          autocomplete="new-password"
+          placeholder="Elige una contraseña"
+          [ngModel]="setupPassword()"
+          (ngModelChange)="setupPassword.set($event)"
+        />
+        <label for="setupConfirm">Repite la contraseña</label>
+        <input
+          id="setupConfirm"
+          name="setupConfirm"
+          type="password"
+          autocomplete="new-password"
+          placeholder="Repite la contraseña"
+          [ngModel]="setupConfirm()"
+          (ngModelChange)="setupConfirm.set($event)"
+        />
+        <label for="setupLogo">Logo de la aplicación</label>
+        <input
+          id="setupLogo"
+          type="file"
+          accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+          (change)="onSetupLogo($event)"
+        />
+        <p class="hint">La imagen se guarda para toda la aplicación.</p>
+        <div class="login-error">{{ setupError() }}</div>
+        <button class="btn primary" type="submit">Configurar aplicación</button>
+      </form>
+    </div>
+  </div>
+} @else if (!authenticated()) {
+  <div class="login">
+    <div class="login-card">
+      <div class="logo big">
+        @if (logoUrl()) {
+          <img [src]="logoUrl()!" alt="Logo">
+        } @else {
+          TT
+        }
+      </div>
+      <h1>{{ appName() }}</h1>
+      <p>Pizarra de tiempos oficial</p>
+      <form (submit)="login($event)">
+        <label for="password">Contraseña</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          placeholder="Escribe la contraseña"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+        />
+        <div class="login-error">{{ loginError() }}</div>
+        <button class="btn primary" type="submit">Entrar</button>
+      </form>
+    </div>
+  </div>
+} @else {
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">
+          @if (logoUrl()) {
+            <img [src]="logoUrl()!" alt="Logo">
+          } @else {
+            TT
+          }
+        </div>
+        <div>
+          <h1>{{ appName() }}</h1>
+          <p>
+            @if (view(); as v) {
+              {{ v.name }} · {{ v.date | dateLabel }}
+            } @else {
+              Sin rally activo
+            }
+          </p>
+        </div>
+      </div>
+
+      <app-clock />
+
+      <div class="toolbar">
+        <button class="btn" type="button" (click)="toggleWake()" [class.active]="ui.wake()">
+          <span class="ico">💡</span>
+          <span class="btn-label">{{ ui.wake() ? 'Pantalla: siempre' : 'Pantalla: normal' }}</span>
+        </button>
+        <button class="btn" type="button" (click)="ui.toggleTheme()" [class.active]="ui.theme() === 'dark'">
+          <span class="ico">{{ ui.theme() === 'dark' ? '☀️' : '🌙' }}</span>
+          <span class="btn-label">{{ ui.theme() === 'dark' ? 'Claro' : 'Oscuro' }}</span>
+        </button>
+        <button class="btn" type="button" (click)="openInvite()" [disabled]="!view()">
+          <span class="ico">🔗</span>
+          <span class="btn-label">Invitar</span>
+        </button>
+        <button class="btn" type="button" (click)="openConfig('edit')" [disabled]="!view()">
+          <span class="ico">⚙</span>
+          <span class="btn-label">Configuración</span>
+        </button>
+        <button class="btn" type="button" (click)="exportRally()" [disabled]="!view()">
+          <span class="ico">⬇</span>
+          <span class="btn-label">Exportar</span>
+        </button>
+        <button class="btn" type="button" (click)="logout()">
+          <span class="ico">↪</span>
+          <span class="btn-label">Salir</span>
+        </button>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab" type="button" [class.active]="tab() === 'rally'" (click)="tab.set('rally')">Rally</button>
+      <button class="tab" type="button" [class.active]="tab() === 'records'" (click)="tab.set('records')">Récords</button>
+      <button class="tab" type="button" [class.active]="tab() === 'history'" (click)="tab.set('history')">Historial</button>
+    </nav>
+
+    <main>
+      @if (tab() === 'rally') {
+        @if (view(); as v) {
+          <div class="statusbar">
+            <span
+              class="chip"
+              [class.live]="v.currentStageStatus === 'LIVE'"
+              [class.ghost]="v.currentStageStatus !== 'LIVE'"
+            >
+              <span class="dot" [class.live]="v.currentStageStatus === 'LIVE'"></span>
+              @if (v.currentStageStatus === 'FINISHED') {
+                Rally terminado
+              } @else {
+                {{ v.currentStageCode }}
+                {{ v.currentStageStatus === 'LIVE' ? 'En curso' : 'Pendiente' }}
+              }
+            </span>
+            @if (v.missingNames.length) {
+              <span class="chip warn">Faltan {{ v.missingNames.length }}: {{ v.missingNames.join(', ') }}</span>
+            }
+            <span class="chip ghost">
+              <span class="dot" [class.ok]="online() && connected()" [class.warn]="!online() || !connected()"></span>
+              {{ online() && connected() ? 'Conectado' : 'Reconectando…' }}
+            </span>
+          </div>
+
+          <div class="table-toolbar">
+            <label class="switch">
+              <input
+                type="checkbox"
+                name="showGaps"
+                [ngModel]="showGaps()"
+                (ngModelChange)="showGaps.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+              />
+              <span class="slider"></span>
+              <span>Mostrar diferencias</span>
+            </label>
+            <span class="hint">
+              Diferencias por tramo: <b>mejor</b> · <b>anterior</b> · <b>referencia</b>. Sin
+              tooltips: todo visible.
+            </span>
+          </div>
+
+          <app-rally-table
+            [view]="v"
+            [editable]="true"
+            [showGaps]="showGaps()"
+            (editCell)="openEdit($event)"
+            (openStage)="openStage($event)"
+          />
+
+          <div class="legend">
+            <span><span class="sw purple"></span>Morado · mejor del tramo</span>
+            <span><span class="sw green"></span>Verde · válido</span>
+            <span><span class="sw red"></span>Rojo · penalización</span>
+            <span>🏆 Récord histórico</span>
+            <span><span class="prov">•</span> Provisional</span>
+            <span><span class="gap-ref">2º Carlos</span> referencia del anterior</span>
+            <span><span class="badge ec">EC</span> En curso</span>
+            <span><span class="badge ret">RET</span> Retirado</span>
+          </div>
+        } @else {
+          <div class="page-head">
+            <div>
+              <h2>No hay rally activo</h2>
+              <p class="muted">Crea un rally nuevo para empezar a apuntar tiempos.</p>
+            </div>
+            <button class="btn primary" type="button" (click)="openConfig('new')">Nuevo rally</button>
+          </div>
+        }
+      }
+
+      @if (tab() === 'records') {
+        <div class="page-head">
+          <div>
+            <h2>Récords históricos</h2>
+            <p class="muted">Mejor tiempo y top 5 por nombre de tramo. Incluye shakedown con nombre.</p>
+          </div>
+          <input
+            class="search"
+            type="search"
+            name="recordFilter"
+            placeholder="Buscar tramo o piloto…"
+            [ngModel]="recordFilter()"
+            (ngModelChange)="recordFilter.set($event)"
+            [ngModelOptions]="{ standalone: true }"
+          />
+        </div>
+
+        <div class="records-grid">
+          @for (record of filteredRecords(); track record.key) {
+            <article class="record-card">
+              <div class="record-top">
+                <div>
+                  <div class="record-name">
+                    {{ record.name }}
+                    @if (record.type === 'SHAKEDOWN') {
+                      <span class="tag">SD</span>
+                    }
+                  </div>
+                  <div class="record-meta">
+                    {{ record.holder }} · {{ record.car }}<br />
+                    {{ record.rally }} · {{ record.date | dateLabel }}
+                  </div>
+                </div>
+                <div class="record-time">{{ record.recordMs | raceTime }}</div>
+              </div>
+              <table class="top-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Piloto</th>
+                    <th>Coche</th>
+                    <th>Tiempo</th>
+                    <th>Rally</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (entry of record.top; track entry.position) {
+                    <tr>
+                      <td>{{ entry.position }}</td>
+                      <td>{{ entry.pilot }}</td>
+                      <td>{{ entry.car }}</td>
+                      <td class="mono">{{ entry.millis | raceTime }}</td>
+                      <td class="muted small">
+                        {{ entry.rally }}<br />{{ entry.date | dateLabel }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </article>
+          }
+          @if (!filteredRecords().length) {
+            <p class="muted">No hay récords que coincidan.</p>
+          }
+        </div>
+      }
+
+      @if (tab() === 'history') {
+        <div class="page-head">
+          <div>
+            <h2>Historial de rallies</h2>
+            <p class="muted">Todos los rallies guardados. Puedes duplicar la configuración de cualquiera.</p>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+            <input
+              class="search"
+              type="search"
+              name="historyFilter"
+              placeholder="Buscar rally, fecha o ganador…"
+              [ngModel]="historyFilter()"
+              (ngModelChange)="historyFilter.set($event)"
+              [ngModelOptions]="{ standalone: true }"
+            />
+            <button class="btn primary" type="button" (click)="openConfig('new')">Nuevo rally</button>
+          </div>
+        </div>
+
+        <div class="history-list">
+          @for (item of filteredHistory(); track item.id) {
+            <div class="history-card" [class.active]="item.active">
+              <div>
+                <div class="history-name">
+                  {{ item.name }}
+                  @if (item.active) {
+                    <span class="chip live small"><span class="dot live"></span>En curso</span>
+                  }
+                </div>
+                <div class="muted small" style="margin-top: 4px">
+                  {{ item.date | dateLabel }} · {{ item.stagesClosed }} de {{ item.stagesTotal }}
+                  @if (item.active) {
+                    · Líder: {{ item.leader || '—' }}
+                  } @else {
+                    · Ganador: {{ item.winner || '—' }}
+                  }
+                </div>
+              </div>
+              <div class="history-actions">
+                <button class="btn small" type="button" (click)="openRally(item)">Abrir</button>
+                @if (!item.active) {
+                  <button class="btn small" type="button" (click)="reopenRally(item)">Reabrir</button>
+                }
+                <button class="btn small" type="button" (click)="duplicateRally(item)">Duplicar</button>
+                <button class="btn small" type="button" (click)="exportSummary(item)">Exportar</button>
+                <button class="btn small danger" type="button" (click)="deleteRally(item)">Borrar</button>
+              </div>
+            </div>
+          }
+          @if (!filteredHistory().length) {
+            <p class="muted">No hay rallies que coincidan.</p>
+          }
+        </div>
+      }
+    </main>
+
+    <footer class="footer">
+      Tabla de tiempos creado por Bochi
+    </footer>
+
+    @if (stage(); as selectedStage) {
+      <app-stage-panel [view]="view()!" [stage]="selectedStage" (close)="stage.set(null)" />
+    }
+
+    @if (edit(); as target) {
+      <div class="modal open" (click)="onEditBackdrop($event)">
+        <div class="modal-card" style="width: min(560px, 96vw)">
+          <div class="modal-head">
+            <div>
+              <h2>{{ target.stage.code }} · {{ target.row.name }}</h2>
+              <div class="muted small" style="margin-top: 5px">
+                {{ target.stage.name }} · {{ target.row.car }}
+              </div>
+            </div>
+            <button class="icon-btn" type="button" (click)="closeEdit()" aria-label="Cerrar">✕</button>
+          </div>
+
+          @if (target.row.status !== 'RETIRED') {
+            <div class="field">
+              <label for="editTime">Tiempo</label>
+              <input
+                id="editTime"
+                name="editTime"
+                placeholder="00.00.000"
+                [ngModel]="editTime()"
+                (ngModelChange)="editTime.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+              />
+              <p class="hint">Puedes escribir 1.23.456 o 123456. El 0 no es un tiempo válido.</p>
+            </div>
+            <div class="login-error">{{ editError() }}</div>
+            <div class="modal-actions" style="flex-wrap: wrap">
+              <button class="btn" type="button" (click)="saveEdit('CLEAR')">Vaciar</button>
+              <button class="btn" type="button" (click)="saveEdit('PENALTY')">Penalización</button>
+              <button class="btn" type="button" (click)="retireTarget()">Retirar</button>
+              <button class="btn primary" type="button" (click)="saveEdit('VALID')">Guardar tiempo</button>
+            </div>
+          } @else {
+            <p class="muted">Este piloto está retirado. Puedes reintegrarlo para volver a apuntar tiempos.</p>
+            <div class="login-error">{{ editError() }}</div>
+            <div class="modal-actions">
+              <button class="btn primary" type="button" (click)="unretireTarget()">Reintegrar piloto</button>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    @if (configOpen()) {
+      <div class="modal open" (click)="onConfigBackdrop($event)">
+        <div class="modal-card">
+          <div class="modal-head">
+            <div>
+              <h2>{{ configMode() === 'new' ? 'Nuevo rally' : 'Configuración del rally' }}</h2>
+              <div class="muted small" style="margin-top: 4px">
+                {{ configMode() === 'new'
+                  ? 'Se creará un rally nuevo con los tiempos a cero. El actual pasará al historial.'
+                  : 'Guardar cambios no borra los tiempos.' }}
+              </div>
+            </div>
+            <button class="icon-btn" type="button" (click)="configOpen.set(false)" aria-label="Cerrar">✕</button>
+          </div>
+
+          <div class="config-grid">
+            <div class="field full">
+              <label for="cfgName">Nombre del rally</label>
+              <input
+                id="cfgName"
+                name="cfgName"
+                [ngModel]="configName()"
+                (ngModelChange)="configName.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+              />
+              <p class="hint">
+                La fecha se asigna automáticamente al crear el rally:
+                {{ configMode() === 'new' ? (todayIso() | dateLabel) : (view()?.date | dateLabel) }}.
+              </p>
+            </div>
+
+            <div class="field full">
+              <label>Tramos <span class="hint">El código TC-x es automático</span></label>
+              <div class="config-list">
+                @for (stageName of configStages(); track $index) {
+                  <div class="config-row">
+                    <span class="code">TC-{{ $index + 1 }}</span>
+                    <input
+                      [name]="'stage' + $index"
+                      [attr.list]="'stage-names'"
+                      [ngModel]="stageName"
+                      (ngModelChange)="updateStageName($index, $event)"
+                      [ngModelOptions]="{ standalone: true }"
+                    />
+                    <button class="icon-btn" type="button" (click)="removeStage($index)">✕</button>
+                  </div>
+                }
+              </div>
+              <div class="add-row">
+                <button class="btn" type="button" (click)="addStage()">Añadir tramo</button>
+              </div>
+              <p class="hint">Los nombres se guardan para autocompletar en futuros rallies.</p>
+            </div>
+
+            <div class="field full">
+              <label>Shakedown</label>
+              <label class="check">
+                <input
+                  type="checkbox"
+                  name="cfgShakedown"
+                  [ngModel]="configShakedown()"
+                  (ngModelChange)="configShakedown.set($event)"
+                  [ngModelOptions]="{ standalone: true }"
+                />
+                Incluir shakedown (no suma al rally)
+              </label>
+              <input
+                name="cfgShakedownName"
+                [attr.list]="'stage-names'"
+                placeholder="Nombre del shakedown"
+                [ngModel]="configShakedownName()"
+                (ngModelChange)="configShakedownName.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+
+            <div class="field full">
+              <label>Pilotos y coches</label>
+              <div class="config-list">
+                @for (entrant of configEntrants(); track $index) {
+                  <div class="config-row pilot">
+                    <input
+                      [name]="'pilot' + $index"
+                      placeholder="Piloto"
+                      [attr.list]="'pilot-names'"
+                      [ngModel]="entrant.name"
+                      (ngModelChange)="updateEntrantName($index, $event)"
+                      [ngModelOptions]="{ standalone: true }"
+                    />
+                    <input
+                      [name]="'car' + $index"
+                      placeholder="Coche"
+                      [attr.list]="'car-names'"
+                      [ngModel]="entrant.car"
+                      (ngModelChange)="updateEntrantCar($index, $event)"
+                      [ngModelOptions]="{ standalone: true }"
+                    />
+                    <button class="icon-btn" type="button" (click)="removeEntrant($index)">✕</button>
+                  </div>
+                }
+              </div>
+              <div class="add-row">
+                <button class="btn" type="button" (click)="addEntrant()">Añadir piloto</button>
+              </div>
+              <p class="hint">No se añaden pilotos con el rally en marcha.</p>
+            </div>
+
+            <div class="field full">
+              <label>Penalización</label>
+              <div class="inline">
+                <select
+                  name="cfgPenaltyMode"
+                  [ngModel]="configPenaltyMode()"
+                  (ngModelChange)="configPenaltyMode.set($event)"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  <option value="WORST_PLUS">Peor tiempo del tramo +</option>
+                  <option value="FIXED">Tiempo fijo</option>
+                </select>
+                <input
+                  name="cfgPenaltyValue"
+                  [ngModel]="configPenaltyValue()"
+                  (ngModelChange)="configPenaltyValue.set($event)"
+                  [ngModelOptions]="{ standalone: true }"
+                />
+                <span class="hint">{{ configPenaltyMode() === 'FIXED' ? 'formato de tiempo' : 'segundos' }}</span>
+              </div>
+              <p class="hint">Por defecto: peor tiempo válido + 30 s. Si todos tienen penalización, el tramo no suma.</p>
+            </div>
+          </div>
+
+          <div class="login-error">{{ configError() }}</div>
+          <div class="modal-actions" style="justify-content: space-between">
+            <button class="btn" type="button" (click)="openSettings()">Ajustes de la aplicación</button>
+            <div style="display: flex; gap: 8px">
+              <button class="btn" type="button" (click)="configOpen.set(false)">Cancelar</button>
+              <button class="btn primary" type="button" (click)="saveConfig()">
+                {{ configMode() === 'new' ? 'Crear rally' : 'Guardar cambios' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (settingsOpen()) {
+      <div class="modal open" (click)="onSettingsBackdrop($event)">
+        <div class="modal-card" style="width: min(620px, 96vw)">
+          <div class="modal-head">
+            <div>
+              <h2>Ajustes de la aplicación</h2>
+              <div class="muted small" style="margin-top: 4px">
+                Contraseña y logo para todos los rallies.
+              </div>
+            </div>
+            <button class="icon-btn" type="button" (click)="settingsOpen.set(false)" aria-label="Cerrar">✕</button>
+          </div>
+
+          <div class="config-grid">
+            <div class="field full">
+              <label>Logo de la aplicación</label>
+              <div class="logo big" style="margin: 0 0 10px">
+                @if (logoUrl()) {
+                  <img [src]="logoUrl()!" alt="Logo">
+                } @else {
+                  TT
+                }
+              </div>
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+                (change)="onSettingsLogo($event)"
+              />
+              <p class="hint">Se guarda para toda la aplicación, no por rally.</p>
+              <button class="btn" type="button" (click)="uploadLogo()">Guardar logo</button>
+            </div>
+
+            <div class="field full">
+              <label>Cambiar contraseña</label>
+              <input
+                type="password"
+                placeholder="Contraseña actual"
+                [ngModel]="settingsCurrentPassword()"
+                (ngModelChange)="settingsCurrentPassword.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+              />
+              <input
+                type="password"
+                placeholder="Nueva contraseña"
+                [ngModel]="settingsNewPassword()"
+                (ngModelChange)="settingsNewPassword.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+              />
+              <input
+                type="password"
+                placeholder="Repite la nueva contraseña"
+                [ngModel]="settingsConfirmPassword()"
+                (ngModelChange)="settingsConfirmPassword.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+              />
+              <button class="btn" type="button" (click)="changePassword()">Cambiar contraseña</button>
+            </div>
+          </div>
+
+          <div class="login-error">{{ settingsError() }}</div>
+          <div class="modal-actions">
+            <button class="btn" type="button" (click)="settingsOpen.set(false)">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (inviteOpen()) {
+      <div class="modal open" (click)="onInviteBackdrop($event)">
+        <div class="modal-card invite-card">
+          <div class="modal-head">
+            <div>
+              <h2>Invitar a visualizar</h2>
+              <div class="muted small" style="margin-top: 4px">
+                Comparte este enlace con quien quiera seguir el rally.
+              </div>
+            </div>
+            <button class="icon-btn" type="button" (click)="inviteOpen.set(false)" aria-label="Cerrar">✕</button>
+          </div>
+          <p class="muted small">
+            Quien abra el enlace verá la misma tabla en solo lectura: sin contraseña, sin
+            configuración, sin historial y sin récords. El reloj y la cuenta atrás siguen funcionando.
+          </p>
+          <div class="invite-row">
+            <input [value]="inviteUrl()" readonly />
+            <button class="btn primary" type="button" (click)="copyInvite()">Copiar enlace</button>
+          </div>
+          <div class="modal-actions">
+            <a class="btn" [href]="inviteUrl()" target="_blank" rel="noopener">Abrir vista de invitado</a>
+            <button class="btn" type="button" (click)="inviteOpen.set(false)">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (toast()) {
+      <div class="toast show" [class.record]="toastType() === 'record'">{{ toast() }}</div>
+    }
+  </div>
+
+  <datalist id="stage-names">
+    @for (name of dictionaries().stages; track name) {
+      <option [value]="name"></option>
+    }
+  </datalist>
+  <datalist id="pilot-names">
+    @for (name of dictionaries().pilots; track name) {
+      <option [value]="name"></option>
+    }
+  </datalist>
+  <datalist id="car-names">
+    @for (name of dictionaries().cars; track name) {
+      <option [value]="name"></option>
+    }
+  </datalist>
+}

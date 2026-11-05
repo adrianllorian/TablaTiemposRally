@@ -1,0 +1,1532 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tabla Tiempos Rally — Maqueta</title>
+<style>
+  :root{
+    --bg:#F5F3EA;
+    --surface:#FFFFFF;
+    --surface-2:#EEF2EA;
+    --text:#23302A;
+    --muted:#6B7A70;
+    --line:#DDE3D9;
+    --green:#3F6B52;
+    --green-soft:#DDEDE0;
+    --green-text:#2F5A3F;
+    --purple:#6E5A9E;
+    --purple-soft:#E9E3F4;
+    --red:#B45B5B;
+    --red-soft:#F7DEDE;
+    --amber:#D6A445;
+    --amber-soft:#F7EFD9;
+    --shadow:0 10px 30px rgba(35,48,42,.10);
+    --radius:14px;
+    --w-pos:54px;
+    --w-pilot:132px;
+    --w-car:152px;
+    --w-total:112px;
+    --w-dif:104px;
+  }
+  [data-theme="dark"]{
+    --bg:#131A16;
+    --surface:#1C2621;
+    --surface-2:#223028;
+    --text:#E9EFE9;
+    --muted:#9AA99E;
+    --line:#2C3A31;
+    --green:#86B394;
+    --green-soft:#24382C;
+    --green-text:#BFE0C8;
+    --purple:#B49BE0;
+    --purple-soft:#322843;
+    --red:#E08A8A;
+    --red-soft:#3E2626;
+    --amber:#E3B65E;
+    --amber-soft:#3A3120;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
+    background:
+      radial-gradient(1200px 600px at 90% -10%, rgba(63,107,82,.10), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    min-height:100vh;
+  }
+  button,input,select{font:inherit}
+  button{cursor:pointer}
+  .app{max-width:1560px;margin:0 auto;padding:18px 22px 42px}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+    padding-bottom:14px;border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:12px;min-width:260px}
+  .logo{
+    width:46px;height:46px;border-radius:13px;display:grid;place-items:center;
+    background:linear-gradient(135deg,#4F8161,#2F5A3F);color:#fff;
+    font-weight:800;letter-spacing:.5px;box-shadow:0 6px 16px rgba(47,90,63,.28);
+    flex:0 0 auto;
+  }
+  .logo.big{width:66px;height:66px;font-size:22px;border-radius:18px;margin:0 auto 12px}
+  .brand h1{font-size:18px;line-height:1.1;margin:0}
+  .brand p{margin:3px 0 0;font-size:12px;color:var(--muted)}
+  .clockbox{display:flex;align-items:center;gap:14px}
+  .clock{
+    font-size:22px;font-weight:700;letter-spacing:.4px;
+    font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
+  }
+  .countdown{
+    min-width:96px;text-align:center;border:1px solid var(--line);border-radius:999px;
+    padding:7px 16px 8px;background:var(--surface);box-shadow:var(--shadow);
+  }
+  .countdown .num{
+    font-size:28px;font-weight:800;line-height:1;
+    font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
+  }
+  .countdown .lbl{font-size:9px;color:var(--muted);margin-top:3px}
+  .countdown.hot .num{color:var(--red)}
+  .countdown.warn .num{color:var(--amber)}
+  .countdown.zero .num{color:var(--green)}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .btn{
+    display:inline-flex;align-items:center;gap:7px;
+    border:1px solid var(--line);background:var(--surface);color:var(--text);
+    border-radius:10px;padding:8px 10px;font-size:12px;line-height:1;
+    transition:background .15s,border-color .15s,transform .05s;
+  }
+  .btn:hover{background:var(--surface-2)}
+  .btn:active{transform:translateY(1px)}
+  .btn.active{border-color:var(--green);background:var(--green-soft);color:var(--green-text)}
+  .btn.primary{background:var(--green);border-color:var(--green);color:#fff;font-weight:700;justify-content:center;padding:11px 14px}
+  .btn.primary:hover{background:#355c46}
+  .btn.danger{color:var(--red);border-color:rgba(180,91,91,.35)}
+  .btn.small{padding:6px 8px;font-size:11px;border-radius:8px}
+  .btn .ico{font-size:14px}
+  .btn-label{white-space:nowrap}
+  .tabs{display:flex;gap:6px;margin:14px 0 4px;overflow-x:auto;padding-bottom:2px}
+  .tab{
+    border:1px solid transparent;background:transparent;color:var(--muted);
+    padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;
+  }
+  .tab:hover{background:var(--surface-2);color:var(--text)}
+  .tab.active{background:var(--surface);border-color:var(--line);color:var(--text);box-shadow:var(--shadow)}
+  .statusbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .chip{
+    display:inline-flex;align-items:center;gap:7px;
+    border:1px solid var(--line);background:var(--surface);color:var(--text);
+    border-radius:999px;padding:6px 11px;font-size:11px;font-weight:600;
+    white-space:nowrap;
+  }
+  .chip.small{padding:3px 8px;font-size:10px}
+  .chip.ghost{color:var(--muted);font-weight:500}
+  .chip.warn{border-color:rgba(214,164,69,.45);background:var(--amber-soft);color:#7a5a12}
+  [data-theme="dark"] .chip.warn{color:#eccb82}
+  .chip.live{border-color:rgba(63,107,82,.35);background:var(--green-soft);color:var(--green-text)}
+  .dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--muted);flex:0 0 auto}
+  .dot.ok{background:var(--green)}
+  .dot.warn{background:var(--amber)}
+  .dot.live{background:var(--green);box-shadow:0 0 0 0 rgba(63,107,82,.5);animation:pulse 1.8s infinite}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(63,107,82,.45)}
+    70%{box-shadow:0 0 0 7px rgba(63,107,82,0)}
+    100%{box-shadow:0 0 0 0 rgba(63,107,82,0)}
+  }
+  .table-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:8px 0 10px}
+  .switch{display:inline-flex;align-items:center;gap:9px;font-size:12px;color:var(--text);user-select:none;cursor:pointer}
+  .switch input{position:absolute;opacity:0;pointer-events:none}
+  .slider{
+    width:38px;height:22px;border-radius:999px;background:var(--surface-2);
+    border:1px solid var(--line);position:relative;transition:background .15s,border-color .15s;flex:0 0 auto;
+  }
+  .slider::after{
+    content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;
+    background:var(--muted);transition:transform .15s,background .15s;
+  }
+  .switch input:checked + .slider{background:var(--green-soft);border-color:var(--green)}
+  .switch input:checked + .slider::after{transform:translateX(16px);background:var(--green)}
+  .hint{font-size:11px;color:var(--muted)}
+  .hint b{color:var(--text);font-weight:700}
+  .table-wrap{
+    border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);
+    overflow:auto;max-height:66vh;box-shadow:var(--shadow);
+  }
+  table#rally-table{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;font-size:13px}
+  #rally-table th,#rally-table td{border-bottom:1px solid var(--line)}
+  #rally-table thead th{
+    position:sticky;top:0;z-index:6;background:var(--surface-2);
+    text-align:center;font-size:11px;color:var(--muted);font-weight:700;
+    padding:8px 6px;white-space:nowrap;
+  }
+  #rally-table thead th.col-pos,
+  #rally-table thead th.col-pilot,
+  #rally-table thead th.col-car{z-index:9;text-align:left}
+  #rally-table thead th.col-pos{text-align:center}
+  #rally-table tbody td{
+    padding:8px 6px;text-align:right;white-space:nowrap;
+    font-variant-numeric:tabular-nums;font-feature-settings:"tnum";
+    background:var(--surface);
+  }
+  #rally-table tbody td.col-pos,
+  #rally-table tbody td.col-pilot,
+  #rally-table tbody td.col-car{
+    position:sticky;z-index:4;text-align:left;
+  }
+  #rally-table tbody td.col-pos{text-align:center}
+  #rally-table tbody tr:hover td.col-pos,
+  #rally-table tbody tr:hover td.col-pilot,
+  #rally-table tbody tr:hover td.col-car{background:var(--surface-2)}
+  #rally-table thead th.col-total,
+  #rally-table thead th.col-dif{
+    position:sticky;z-index:9;background:var(--surface-2);
+  }
+  #rally-table tbody td.col-total,
+  #rally-table tbody td.col-dif{
+    position:sticky;z-index:4;background:var(--surface);
+  }
+  #rally-table thead th.col-total,
+  #rally-table tbody td.col-total{
+    right:calc(var(--w-dif) * 2);
+    border-left:1px solid var(--line);
+  }
+  #rally-table thead th.col-dif:nth-last-child(2),
+  #rally-table tbody td.col-dif:nth-last-child(2){
+    right:var(--w-dif);
+  }
+  #rally-table thead th.col-dif:last-child,
+  #rally-table tbody td.col-dif:last-child{
+    right:0;
+  }
+  #rally-table tbody tr:hover td.col-total,
+  #rally-table tbody tr:hover td.col-dif{background:var(--surface-2)}
+  .col-pos{width:var(--w-pos);min-width:var(--w-pos);left:0}
+  .col-pilot{width:var(--w-pilot);min-width:var(--w-pilot);left:var(--w-pos)}
+  .col-car{width:var(--w-car);min-width:var(--w-car);left:calc(var(--w-pos) + var(--w-pilot))}
+  .col-total{width:var(--w-total);min-width:var(--w-total)}
+  .col-dif{width:var(--w-dif);min-width:var(--w-dif)}
+  .stage-head{
+    min-width:124px;vertical-align:bottom;padding:0!important;
+    border-left:1px solid var(--line);
+  }
+  .stage-head.live{box-shadow:inset 0 3px 0 var(--green)}
+  .stage-head.pending{opacity:.86}
+  .stage-btn{
+    all:unset;display:flex;flex-direction:column;gap:2px;align-items:center;
+    width:100%;padding:8px 6px 7px;cursor:pointer;border-radius:0;
+  }
+  .stage-btn:hover{background:rgba(63,107,82,.06)}
+  .stage-code{font-size:11px;font-weight:800;letter-spacing:.3px;color:var(--text)}
+  .stage-name{font-size:11px;color:var(--muted);line-height:1.15;max-width:116px;white-space:normal}
+  .stage-record{font-size:10px;color:var(--amber);font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+  .stage-chip{
+    display:inline-block;margin-top:4px;border-radius:999px;padding:2px 7px;
+    font-size:9px;font-weight:700;border:1px solid var(--line);color:var(--muted);
+    background:var(--surface);
+  }
+  .stage-chip.closed{color:var(--green-text);border-color:rgba(63,107,82,.3);background:var(--green-soft)}
+  .stage-chip.live{color:#7a5a12;border-color:rgba(214,164,69,.45);background:var(--amber-soft)}
+  [data-theme="dark"] .stage-chip.live{color:#eccb82}
+  .stage-chip.pending{color:var(--muted)}
+  .stage-chip.void{color:var(--red);border-color:rgba(180,91,91,.35);background:var(--red-soft)}
+  .pos{font-weight:800;color:var(--text)}
+  .leader .pos{color:var(--green)}
+  .pilot{font-weight:700;color:var(--text)}
+  .car{color:var(--muted);font-size:12px}
+  .retired-row{opacity:.55}
+  .retired-row .pilot{text-decoration:line-through}
+  .cell{position:relative}
+  .cell .time{font-weight:700}
+  .cell.best{background:var(--purple-soft)!important}
+  .cell.best .time,.cell.best{color:var(--purple)}
+  .cell.valid{background:var(--green-soft)!important}
+  .cell.valid .time,.cell.valid{color:var(--green-text)}
+  .cell.penalty{background:var(--red-soft)!important}
+  .cell.penalty .time,.cell.penalty{color:var(--red)}
+  .cell.retired-cell,.cell.ec-cell{color:var(--muted)!important;background:var(--surface-2)!important;font-weight:700}
+  .gap-line{display:none;font-size:10px;line-height:1.3;margin-top:2px;color:var(--muted);letter-spacing:.1px;white-space:normal}
+  #rally-table.show-gaps .gap-line{display:block}
+  .gap-best{font-weight:700;color:var(--muted)}
+  .gap-prev{color:var(--muted);opacity:.85}
+  .gap-ref{color:var(--muted);font-weight:600;opacity:.95;white-space:nowrap}
+  .dif-prev .ref{display:block;font-size:9px;font-weight:500;color:var(--muted);opacity:.85;white-space:nowrap;margin-top:1px}
+  .prov-dot,.prov{color:var(--amber);font-weight:800}
+  .crown{font-size:10px;margin-left:2px}
+  .badge{
+    display:inline-block;font-size:9px;font-weight:800;line-height:1;
+    border-radius:5px;padding:2px 4px;margin-left:3px;vertical-align:1px;
+  }
+  .badge.p{color:var(--red);background:rgba(180,91,91,.14)}
+  .badge.ec{color:var(--muted);background:var(--surface-2);border:1px solid var(--line)}
+  .badge.ret{color:var(--muted);background:var(--surface-2);border:1px solid var(--line);text-decoration:none}
+  .total{font-weight:800}
+  .total.partial{color:var(--muted);font-weight:600}
+  .dif-leader{color:var(--red);font-weight:700}
+  .dif-prev{color:var(--muted);font-weight:600}
+  .legend{display:flex;gap:13px;flex-wrap:wrap;margin-top:11px;font-size:11px;color:var(--muted)}
+  .legend > span{display:inline-flex;align-items:center;gap:5px}
+  .sw{width:12px;height:12px;border-radius:4px;display:inline-block;border:1px solid rgba(0,0,0,.05)}
+  .sw.purple{background:var(--purple-soft)}
+  .sw.green{background:var(--green-soft)}
+  .sw.red{background:var(--red-soft)}
+  .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:14px 0 14px}
+  .page-head h2{margin:0;font-size:20px}
+  .page-head p{margin:4px 0 0}
+  .search{
+    border:1px solid var(--line);background:var(--surface);color:var(--text);
+    border-radius:10px;padding:10px 12px;min-width:240px;font-size:12px;outline:none;
+  }
+  .search:focus{border-color:var(--green)}
+  .records-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:16px}
+  .record-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px;box-shadow:var(--shadow);
+  }
+  .record-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .record-name{font-size:16px;font-weight:800}
+  .record-time{font-size:23px;font-weight:800;color:var(--purple);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .record-meta{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.45}
+  .tag{
+    display:inline-block;font-size:9px;font-weight:800;letter-spacing:.4px;
+    background:var(--purple-soft);color:var(--purple);border-radius:5px;padding:2px 5px;
+    vertical-align:2px;margin-left:4px;
+  }
+  .top-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:11px}
+  .top-table th{text-align:left;color:var(--muted);font-weight:700;padding:5px 4px;border-bottom:1px solid var(--line)}
+  .top-table td{padding:5px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+  .top-table tr:last-child td{border-bottom:0}
+  .mono{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+  .history-list{display:grid;gap:12px}
+  .history-card{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 16px;box-shadow:var(--shadow);
+  }
+  .history-card.active{border-color:var(--green);box-shadow:0 0 0 2px var(--green-soft),var(--shadow)}
+  .history-name{font-weight:800;font-size:14px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .history-actions{display:flex;gap:6px;flex-wrap:wrap}
+  .footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:10px;color:var(--muted);text-align:center}
+  .view{display:none}
+  .view.active{display:block}
+  .modal{
+    position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+    background:rgba(19,26,22,.5);padding:18px;
+  }
+  .modal.open{display:flex}
+  .modal-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:18px;
+    width:min(820px,96vw);max-height:90vh;overflow:auto;padding:20px;box-shadow:var(--shadow);
+  }
+  .invite-card{width:min(620px,96vw)}
+  .invite-row{display:flex;gap:8px;margin:14px 0 4px;flex-wrap:wrap}
+  .invite-row input{
+    flex:1;min-width:220px;border:1px solid var(--line);background:var(--surface-2);
+    color:var(--text);border-radius:9px;padding:10px;font-size:12px;
+    font-family:ui-monospace,Consolas,monospace;
+  }
+  .modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+  .modal-head h2{margin:0;font-size:20px}
+  .icon-btn{
+    border:1px solid var(--line);background:var(--surface);color:var(--text);
+    width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:15px;flex:0 0 auto;
+  }
+  .icon-btn:hover{background:var(--surface-2)}
+  .record-callout{
+    display:flex;gap:14px;align-items:center;
+    border:1px solid rgba(214,164,69,.4);background:var(--amber-soft);
+    border-radius:12px;padding:12px 14px;margin:10px 0 14px;
+  }
+  .record-callout .crown.big{font-size:28px}
+  .record-big{font-size:22px;font-weight:800;color:var(--amber);font-variant-numeric:tabular-nums}
+  [data-theme="dark"] .record-big{color:#eccb82}
+  .small{font-size:11px}
+  .muted{color:var(--muted)}
+  .panel-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+  .panel-table th{
+    text-align:left;color:var(--muted);font-size:10px;padding:7px 6px;
+    border-bottom:1px solid var(--line);background:var(--surface-2);
+  }
+  .panel-table td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+  .panel-table td:nth-child(4),.panel-table td:nth-child(5),.panel-table td:nth-child(6),
+  .panel-table th:nth-child(4),.panel-table th:nth-child(5),.panel-table th:nth-child(6){text-align:right}
+  .panel-table td.cell{padding:7px 6px;border-radius:0}
+  .row-muted{opacity:.6}
+  .config-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field.full{grid-column:1 / -1}
+  .field label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  .field input,.field select{
+    border:1px solid var(--line);background:var(--surface);color:var(--text);
+    border-radius:9px;padding:9px 10px;font-size:12px;outline:none;width:100%;
+  }
+  .field input:focus,.field select:focus{border-color:var(--green)}
+  .config-list{display:grid;gap:7px}
+  .config-row{display:grid;grid-template-columns:58px 1fr 32px;gap:7px;align-items:center}
+  .config-row.pilot{grid-template-columns:1fr 1fr 32px}
+  .config-row .code{font-size:11px;font-weight:800;color:var(--muted)}
+  .add-row{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
+  .add-row input{flex:1;min-width:120px}
+  .inline{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .inline input{width:100px}
+  .inline select{width:auto}
+  .check{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text);text-transform:none;letter-spacing:0;font-weight:500}
+  .check input{width:auto}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+  .login{
+    position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;
+    background:
+      radial-gradient(900px 500px at 50% 0%, rgba(63,107,82,.16), transparent 65%),
+      var(--bg);
+  }
+  .login.hidden{display:none}
+  .login-card{
+    width:min(420px,94vw);background:var(--surface);border:1px solid var(--line);
+    border-radius:20px;padding:28px 26px 24px;box-shadow:var(--shadow);text-align:center;
+  }
+  .login-card h1{font-size:22px;margin:0 0 4px}
+  .login-card > p{margin:0 0 18px;color:var(--muted);font-size:12px}
+  .login-card form{display:flex;flex-direction:column;gap:8px;text-align:left}
+  .login-card label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  .login-card input{
+    border:1px solid var(--line);background:var(--surface);color:var(--text);
+    border-radius:10px;padding:12px;font-size:14px;outline:none;
+  }
+  .login-card input:focus{border-color:var(--green)}
+  .login-error{color:var(--red);font-size:11px;min-height:14px}
+  .linkish{
+    border:0;background:transparent;color:var(--green);font-size:11px;
+    text-decoration:underline;margin-top:10px;padding:4px;
+  }
+  .toast{
+    position:fixed;left:50%;bottom:22px;z-index:200;transform:translate(-50%,12px);
+    background:var(--text);color:var(--bg);padding:10px 16px;border-radius:11px;
+    font-size:12px;font-weight:600;max-width:92vw;text-align:center;opacity:0;
+    pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:var(--shadow);
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast.record{background:var(--amber);color:#2b210b}
+  [hidden]{display:none!important}
+  body.spectator .tabs,
+  body.spectator .admin-only{display:none!important}
+  body.spectator .table-wrap{max-height:78vh}
+  @media (max-width: 1000px){
+    :root{--w-pos:48px;--w-pilot:116px;--w-car:132px;--w-total:104px;--w-dif:96px}
+    .app{padding:12px 12px 30px}
+    .brand{min-width:0}
+    .clockbox{width:100%;justify-content:space-between}
+    .toolbar{width:100%;justify-content:flex-start}
+    .table-wrap{max-height:60vh}
+    .config-grid{grid-template-columns:1fr}
+    .modal-card{width:96vw;padding:16px}
+    .records-grid{grid-template-columns:1fr}
+    .page-head{align-items:flex-start}
+    .search{width:100%;min-width:0}
+    .history-card{align-items:flex-start}
+    .stage-head{min-width:112px}
+  }
+  @media (max-width: 760px){
+    .btn-label{display:none}
+    #rally-table thead th.col-total,
+    #rally-table thead th.col-dif,
+    #rally-table tbody td.col-total,
+    #rally-table tbody td.col-dif{position:static}
+  }
+  @media (max-width: 620px){
+    .brand h1{font-size:16px}
+    .clock{font-size:18px}
+    .countdown{min-width:82px}
+    .countdown .num{font-size:22px}
+    .legend{gap:9px;font-size:10px}
+    .login-card{padding:22px 18px}
+    .panel-table{font-size:11px}
+    .panel-table th,.panel-table td{padding:6px 4px}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login" id="login">
+  <div class="login-card">
+    <div class="logo big">TT</div>
+    <h1>Tabla Tiempos Rally</h1>
+    <p>La pizarra viva de vuestro rally.</p>
+    <form id="login-form">
+      <label for="password">Contraseña</label>
+      <input id="password" type="password" autocomplete="current-password" placeholder="Escribe la contraseña">
+      <div class="login-error" id="login-error"></div>
+      <button class="btn primary" type="submit">Entrar</button>
+    </form>
+    <button class="linkish" type="button" id="demo-fill">Usar la contraseña de demo</button>
+    <p class="hint" style="margin-top:8px">Contraseña de demo: <b>Payet123</b></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">TT</div>
+      <div>
+        <h1>Tabla Tiempos Rally</h1>
+        <p id="rally-sub">Rally de Otoño 2026 · 5 nov 2026</p>
+      </div>
+    </div>
+    <div class="clockbox">
+      <div class="clock" id="clock">00:00:00</div>
+      <div class="countdown" id="countdown">
+        <div class="num">00</div>
+        <div class="lbl">Salida 20 s</div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="wake-btn" type="button"><span class="ico">💡</span><span class="btn-label" id="wake-label">Pantalla: normal</span></button>
+      <button class="btn" id="theme-btn" type="button"><span class="ico">🌙</span><span class="btn-label" id="theme-label">Oscuro</span></button>
+      <button class="btn admin-only" id="invite-btn" type="button"><span class="ico">🔗</span><span class="btn-label">Invitar</span></button>
+      <button class="btn admin-only" id="config-btn" type="button"><span class="ico">⚙</span><span class="btn-label">Configuración</span></button>
+      <button class="btn admin-only" id="export-btn" type="button"><span class="ico">⬇</span><span class="btn-label">Exportar</span></button>
+      <button class="btn admin-only" id="logout-btn" type="button"><span class="ico">↪</span><span class="btn-label">Salir</span></button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-view="rally" type="button">Rally</button>
+    <button class="tab" data-view="records" type="button">Récords</button>
+    <button class="tab" data-view="history" type="button">Historial</button>
+  </nav>
+
+  <main>
+    <!-- RALLY -->
+    <section id="view-rally" class="view active">
+      <div class="statusbar">
+        <span class="chip live" id="stage-chip"><span class="dot live"></span> TC-3 En curso</span>
+        <span class="chip warn" id="missing-chip">Faltan 1: Mario</span>
+        <span class="chip ghost" id="spectator-chip" hidden>Solo lectura</span>
+        <span class="chip ghost"><span class="dot ok" id="conn-dot"></span><span id="conn-text">Conectado</span></span>
+      </div>
+
+      <div class="table-toolbar">
+        <label class="switch">
+          <input type="checkbox" id="gaps-toggle">
+          <span class="slider"></span>
+          <span>Mostrar diferencias</span>
+        </label>
+        <span class="hint">Diferencias por tramo: <b>mejor</b> · <b>anterior</b> · <b>referencia</b>. Sin tooltips: todo visible.</span>
+      </div>
+
+      <div class="table-wrap">
+        <table id="rally-table">
+          <thead><tr id="table-head"></tr></thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+
+      <div class="legend">
+        <span><span class="sw purple"></span>Morado · mejor del tramo</span>
+        <span><span class="sw green"></span>Verde · válido</span>
+        <span><span class="sw red"></span>Rojo · penalización</span>
+        <span>🏆 Récord histórico</span>
+        <span><span class="prov">•</span> Provisional</span>
+        <span><span class="gap-ref">2º Carlos</span> referencia del anterior</span>
+        <span><span class="badge ec">EC</span> En curso</span>
+        <span><span class="badge ret">RET</span> Retirado</span>
+      </div>
+    </section>
+
+    <!-- RÉCORDS -->
+    <section id="view-records" class="view">
+      <div class="page-head">
+        <div>
+          <h2>Récords históricos</h2>
+          <p class="muted">Mejor tiempo y top 5 por nombre de tramo. Incluye shakedown con nombre.</p>
+        </div>
+        <input class="search" id="records-search" type="search" placeholder="Buscar tramo o piloto…">
+      </div>
+      <div class="records-grid" id="records-grid"></div>
+    </section>
+
+    <!-- HISTORIAL -->
+    <section id="view-history" class="view">
+      <div class="page-head">
+        <div>
+          <h2>Historial de rallies</h2>
+          <p class="muted">Todos los rallies guardados. Puedes duplicar la configuración de cualquiera.</p>
+        </div>
+        <button class="btn primary" id="new-rally-btn" type="button">Nuevo rally</button>
+      </div>
+      <div class="history-list" id="history-list"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Tabla Tiempos Rally · maqueta con datos de ejemplo · el logo y el nombre se configuran una vez en el despliegue
+  </footer>
+</div>
+
+<!-- PANEL DE TRAMO -->
+<div class="modal" id="stage-modal">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="stage-title">
+    <div class="modal-head">
+      <div>
+        <h2 id="stage-title">Tramo</h2>
+        <div id="stage-sub" class="muted small" style="margin-top:5px"></div>
+      </div>
+      <button class="icon-btn" type="button" data-close-stage aria-label="Cerrar">✕</button>
+    </div>
+    <div id="stage-content"></div>
+  </div>
+</div>
+
+<!-- INVITAR A VISUALIZAR -->
+<div class="modal" id="invite-modal">
+  <div class="modal-card invite-card" role="dialog" aria-modal="true" aria-labelledby="invite-title">
+    <div class="modal-head">
+      <div>
+        <h2 id="invite-title">Invitar a visualizar</h2>
+        <div class="muted small" style="margin-top:4px">Comparte este enlace con quien quiera seguir el rally.</div>
+      </div>
+      <button class="icon-btn" type="button" data-close-invite aria-label="Cerrar">✕</button>
+    </div>
+    <p class="muted small">Quien abra el enlace verá la misma tabla en solo lectura: sin contraseña, sin configuración, sin historial y sin récords. El reloj y la cuenta atrás siguen funcionando.</p>
+    <div class="invite-row">
+      <input id="invite-url" readonly>
+      <button class="btn primary" type="button" id="copy-invite">Copiar enlace</button>
+    </div>
+    <div class="modal-actions">
+      <a class="btn" id="open-invite" href="?ver=1" target="_blank" rel="noopener">Abrir vista de invitado</a>
+      <button class="btn" type="button" data-close-invite>Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIGURACIÓN -->
+<div class="modal" id="config-modal">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="config-title">
+    <div class="modal-head">
+      <div>
+        <h2 id="config-title">Configuración del rally</h2>
+        <div class="muted small" style="margin-top:4px">El código TC-x lo pone la app. Tú solo escribes el nombre.</div>
+        <div class="muted small" style="margin-top:4px" id="config-note">Guardar cambios no borra los tiempos. Para empezar de cero, usa Nuevo rally.</div>
+      </div>
+      <button class="icon-btn" type="button" data-close-config aria-label="Cerrar">✕</button>
+    </div>
+
+    <div class="config-grid">
+      <div class="field full">
+        <label for="cfg-name">Nombre del rally</label>
+        <input id="cfg-name" value="Rally de Otoño 2026">
+        <p class="hint" id="config-date-hint">La fecha se asigna automáticamente al crear el rally: 5 nov 2026.</p>
+      </div>
+
+      <div class="field full">
+        <label>Tramos <span class="hint">El código TC-x es automático</span></label>
+        <div id="stage-config-list" class="config-list">
+          <div class="config-row"><span class="code">TC-1</span><input value="Muncó"><button class="icon-btn" type="button" data-remove>✕</button></div>
+          <div class="config-row"><span class="code">TC-2</span><input value="Subida a la falla"><button class="icon-btn" type="button" data-remove>✕</button></div>
+          <div class="config-row"><span class="code">TC-3</span><input value="Coll de la Creu"><button class="icon-btn" type="button" data-remove>✕</button></div>
+          <div class="config-row"><span class="code">TC-4</span><input value="Les Planes"><button class="icon-btn" type="button" data-remove>✕</button></div>
+          <div class="config-row"><span class="code">TC-5</span><input value="Muncó alto"><button class="icon-btn" type="button" data-remove>✕</button></div>
+          <div class="config-row"><span class="code">TC-6</span><input value="Meta"><button class="icon-btn" type="button" data-remove>✕</button></div>
+        </div>
+        <div class="add-row">
+          <input id="new-stage" list="stage-names" placeholder="Añadir tramo (escribe 'mu' y elige)">
+          <button class="btn" type="button" id="add-stage">Añadir</button>
+        </div>
+        <p class="hint">Los nombres se guardan para autocompletar en futuros rallies.</p>
+      </div>
+
+      <div class="field full">
+        <label>Shakedown</label>
+        <label class="check"><input type="checkbox" id="cfg-sd" checked> Incluir shakedown (no suma al rally)</label>
+        <input id="cfg-sd-name" list="stage-names" value="Muncó">
+      </div>
+
+      <div class="field full">
+        <label>Pilotos y coches</label>
+        <div id="pilot-config-list" class="config-list">
+          <div class="config-row pilot"><input value="Pepe"><input value="Ford Escort RS"><button class="icon-btn" type="button" data-remove>✕</button></div>
+          <div class="config-row pilot"><input value="Carlos"><input value="Renault 5 Turbo"><button class="icon-btn" type="button" data-remove>✕</button></div>
+          <div class="config-row pilot"><input value="Juan"><input value="Subaru Impreza"><button class="icon-btn" type="button" data-remove>✕</button></div>
+          <div class="config-row pilot"><input value="Mario"><input value="Mitsubishi Lancer"><button class="icon-btn" type="button" data-remove>✕</button></div>
+          <div class="config-row pilot"><input value="Ana"><input value="Lancia Delta"><button class="icon-btn" type="button" data-remove>✕</button></div>
+        </div>
+        <div class="add-row">
+          <input id="new-pilot" list="pilot-names" placeholder="Piloto">
+          <input id="new-car" list="car-names" placeholder="Coche">
+          <button class="btn" type="button" id="add-pilot">Añadir</button>
+        </div>
+        <p class="hint">No se añaden pilotos con el rally en marcha.</p>
+      </div>
+
+      <div class="field full">
+        <label>Penalización</label>
+        <div class="inline">
+          <select id="cfg-penalty">
+            <option value="worst">Peor tiempo del tramo +</option>
+            <option value="fixed">Tiempo fijo</option>
+          </select>
+          <input id="cfg-penalty-value" type="number" value="30" min="0">
+          <select id="cfg-penalty-unit"><option value="s">segundos</option><option value="m">minutos</option></select>
+        </div>
+        <p class="hint">Por defecto: peor tiempo válido + 30 s. Si todos tienen penalización, el tramo no suma.</p>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" type="button" data-close-config>Cancelar</button>
+      <button class="btn primary" type="button" id="save-config">Guardar configuración</button>
+    </div>
+  </div>
+</div>
+
+<!-- DATALISTS -->
+<datalist id="stage-names">
+  <option value="Muncó"></option>
+  <option value="Muncó alto"></option>
+  <option value="Subida a la falla"></option>
+  <option value="Coll de la Creu"></option>
+  <option value="Les Planes"></option>
+  <option value="Meta"></option>
+</datalist>
+<datalist id="pilot-names">
+  <option value="Pepe"></option>
+  <option value="Carlos"></option>
+  <option value="Juan"></option>
+  <option value="Mario"></option>
+  <option value="Ana"></option>
+</datalist>
+<datalist id="car-names">
+  <option value="Ford Escort RS"></option>
+  <option value="Renault 5 Turbo"></option>
+  <option value="Subaru Impreza"></option>
+  <option value="Mitsubishi Lancer"></option>
+  <option value="Lancia Delta"></option>
+</datalist>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   DATOS DE EJEMPLO
+   ========================================================= */
+const rally = {
+  name: "Rally de Otoño 2026",
+  date: "5 nov 2026",
+  stages: [
+    { id:"SD",  code:"SD",   name:"Muncó",             type:"sd",    status:"closed", record:128900, rec:{holder:"Juan",   car:"Subaru Impreza",  rally:"Rally de Verano 2025",   date:"20 ago 2025"} },
+    { id:"TC1", code:"TC-1", name:"Muncó",             status:"closed", record:130500, rec:{holder:"Pepe",   car:"Ford Escort RS",  rally:"Rally de Otoño 2026",   date:"5 nov 2026"} },
+    { id:"TC2", code:"TC-2", name:"Subida a la falla", status:"closed", record:181900, rec:{holder:"Carlos", car:"Renault 5 Turbo", rally:"Rally de Primavera 2026", date:"12 abr 2026"} },
+    { id:"TC3", code:"TC-3", name:"Coll de la Creu",   status:"closed", record:248000, rec:{holder:"Pepe",   car:"Ford Escort RS",  rally:"Rally de Primavera 2026", date:"12 abr 2026"} },
+    { id:"TC4", code:"TC-4", name:"Les Planes",        status:"live",   record:285000, rec:{holder:"Ana",    car:"Lancia Delta",    rally:"Rally de Verano 2025",   date:"20 ago 2025"} },
+    { id:"TC5", code:"TC-5", name:"Muncó alto",        status:"pending",record:135000, rec:{holder:"Juan",   car:"Subaru Impreza",  rally:"Rally de Primavera 2026", date:"12 abr 2026"} },
+    { id:"TC6", code:"TC-6", name:"Meta",              status:"pending",record:null,   rec:null }
+  ],
+  entrants: [
+    { id:"pepe",   name:"Pepe",   car:"Ford Escort RS",   order:0, retired:false, retiredAt:null },
+    { id:"carlos", name:"Carlos", car:"Renault 5 Turbo",  order:1, retired:false, retiredAt:null },
+    { id:"juan",   name:"Juan",   car:"Subaru Impreza",   order:2, retired:false, retiredAt:null },
+    { id:"mario",  name:"Mario",  car:"Mitsubishi Lancer",order:3, retired:false, retiredAt:null },
+    { id:"ana",    name:"Ana",    car:"Lancia Delta",     order:4, retired:true,  retiredAt:"TC2" }
+  ],
+  results: {
+    pepe:   { SD:130500, TC1:130500, TC2:185000, TC3:250000, TC4:300000 },
+    carlos: { SD:129800, TC1:131000, TC2:184500, TC3:249500, TC4:299000 },
+    juan:   { SD:131200, TC1:132300, TC2:186000, TC3:251000, TC4:302000 },
+    mario:  { SD:132000, TC1:134000, TC2:{ms:216000,penalty:true}, TC3:252000 },
+    ana:    { SD:133500, TC1:133200 }
+  }
+};
+
+const records = [
+  {
+    name:"Muncó", type:"TC", record:130500, holder:"Pepe", car:"Ford Escort RS",
+    rally:"Rally de Otoño 2026", date:"5 nov 2026",
+    top:[
+      {pos:1,pilot:"Pepe",car:"Ford Escort RS",time:130500,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:2,pilot:"Carlos",car:"Renault 5 Turbo",time:131000,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:3,pilot:"Juan",car:"Subaru Impreza",time:132300,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:4,pilot:"Ana",car:"Lancia Delta",time:133200,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:5,pilot:"Mario",car:"Mitsubishi Lancer",time:134000,rally:"Rally de Otoño 2026",date:"5 nov 2026"}
+    ]
+  },
+  {
+    name:"Subida a la falla", type:"TC", record:181900, holder:"Carlos", car:"Renault 5 Turbo",
+    rally:"Rally de Primavera 2026", date:"12 abr 2026",
+    top:[
+      {pos:1,pilot:"Carlos",car:"Renault 5 Turbo",time:181900,rally:"Rally de Primavera 2026",date:"12 abr 2026"},
+      {pos:2,pilot:"Carlos",car:"Renault 5 Turbo",time:184500,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:3,pilot:"Pepe",car:"Ford Escort RS",time:185000,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:4,pilot:"Juan",car:"Subaru Impreza",time:186000,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:5,pilot:"Ana",car:"Lancia Delta",time:187200,rally:"Rally de Verano 2025",date:"20 ago 2025"}
+    ]
+  },
+  {
+    name:"Coll de la Creu", type:"TC", record:248000, holder:"Pepe", car:"Ford Escort RS",
+    rally:"Rally de Primavera 2026", date:"12 abr 2026",
+    top:[
+      {pos:1,pilot:"Pepe",car:"Ford Escort RS",time:248000,rally:"Rally de Primavera 2026",date:"12 abr 2026"},
+      {pos:2,pilot:"Carlos",car:"Renault 5 Turbo",time:249500,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:3,pilot:"Pepe",car:"Ford Escort RS",time:250000,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:4,pilot:"Juan",car:"Subaru Impreza",time:251000,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:5,pilot:"Mario",car:"Mitsubishi Lancer",time:252500,rally:"Rally de Verano 2025",date:"20 ago 2025"}
+    ]
+  },
+  {
+    name:"Les Planes", type:"TC", record:285000, holder:"Ana", car:"Lancia Delta",
+    rally:"Rally de Verano 2025", date:"20 ago 2025",
+    top:[
+      {pos:1,pilot:"Ana",car:"Lancia Delta",time:285000,rally:"Rally de Verano 2025",date:"20 ago 2025"},
+      {pos:2,pilot:"Carlos",car:"Renault 5 Turbo",time:299000,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:3,pilot:"Pepe",car:"Ford Escort RS",time:300000,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:4,pilot:"Juan",car:"Subaru Impreza",time:302000,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:5,pilot:"Mario",car:"Mitsubishi Lancer",time:320000,rally:"Rally de Verano 2025",date:"20 ago 2025"}
+    ]
+  },
+  {
+    name:"Muncó alto", type:"TC", record:135000, holder:"Juan", car:"Subaru Impreza",
+    rally:"Rally de Primavera 2026", date:"12 abr 2026",
+    top:[
+      {pos:1,pilot:"Juan",car:"Subaru Impreza",time:135000,rally:"Rally de Primavera 2026",date:"12 abr 2026"},
+      {pos:2,pilot:"Pepe",car:"Ford Escort RS",time:136100,rally:"Rally de Primavera 2026",date:"12 abr 2026"},
+      {pos:3,pilot:"Carlos",car:"Renault 5 Turbo",time:136800,rally:"Rally de Verano 2025",date:"20 ago 2025"},
+      {pos:4,pilot:"Mario",car:"Mitsubishi Lancer",time:138200,rally:"Rally de Verano 2025",date:"20 ago 2025"},
+      {pos:5,pilot:"Ana",car:"Lancia Delta",time:139000,rally:"Rally de Verano 2025",date:"20 ago 2025"}
+    ]
+  },
+  {
+    name:"Shakedown Muncó", type:"SD", record:128900, holder:"Juan", car:"Subaru Impreza",
+    rally:"Rally de Verano 2025", date:"20 ago 2025",
+    top:[
+      {pos:1,pilot:"Juan",car:"Subaru Impreza",time:128900,rally:"Rally de Verano 2025",date:"20 ago 2025"},
+      {pos:2,pilot:"Carlos",car:"Renault 5 Turbo",time:129800,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:3,pilot:"Pepe",car:"Ford Escort RS",time:130500,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:4,pilot:"Juan",car:"Subaru Impreza",time:131200,rally:"Rally de Otoño 2026",date:"5 nov 2026"},
+      {pos:5,pilot:"Mario",car:"Mitsubishi Lancer",time:132000,rally:"Rally de Otoño 2026",date:"5 nov 2026"}
+    ]
+  }
+];
+
+const history = [
+  { name:"Rally de Otoño 2026", date:"5 nov 2026", status:"Activo", leader:"Carlos", stages:"4 de 6", active:true },
+  { name:"Rally de Primavera 2026", date:"12 abr 2026", status:"Terminado", winner:"Carlos", stages:"5 tramos", active:false },
+  { name:"Rally de Verano 2025", date:"20 ago 2025", status:"Terminado", winner:"Juan", stages:"6 tramos", active:false }
+];
+
+/* =========================================================
+   UTILIDADES
+   ========================================================= */
+function fmt(ms){
+  if (ms == null) return "—";
+  const m = Math.floor(ms / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  const t = ms % 1000;
+  return String(m).padStart(2,"0") + "." + String(s).padStart(2,"0") + "." + String(t).padStart(3,"0");
+}
+function fmtGap(ms){
+  if (ms == null || ms === 0) return "—";
+  const sign = ms > 0 ? "+" : "−";
+  const a = Math.abs(ms);
+  const m = Math.floor(a / 60000);
+  const s = Math.floor((a % 60000) / 1000);
+  const t = a % 1000;
+  if (m === 0) return sign + s + "." + String(t).padStart(3,"0");
+  return sign + m + "." + String(s).padStart(2,"0") + "." + String(t).padStart(3,"0");
+}
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
+function stageIndex(id){ return rally.stages.findIndex(s => s.id === id); }
+function getResult(entrantId, stageId){
+  const r = rally.results[entrantId] ? rally.results[entrantId][stageId] : null;
+  if (r == null) return null;
+  return typeof r === "number" ? { ms:r, penalty:false } : { ms:r.ms, penalty:true };
+}
+function isRetiredFor(entrant, stage){
+  if (!entrant.retired) return false;
+  if (!entrant.retiredAt) return true;
+  return stageIndex(stage.id) >= stageIndex(entrant.retiredAt);
+}
+function currentStage(){
+  return rally.stages.find(s => s.status === "live") || rally.stages.find(s => s.status === "pending");
+}
+function countingStages(){
+  const cur = currentStage();
+  return rally.stages.filter(s => s.type !== "sd" && (s.status === "closed" || s === cur));
+}
+
+/* =========================================================
+   CLASIFICACIÓN
+   ========================================================= */
+function stageBest(stage){
+  let best = null;
+  for (const e of rally.entrants) {
+    if (isRetiredFor(e, stage)) continue;
+    const r = getResult(e.id, stage.id);
+    if (!r || r.penalty) continue;
+    if (best === null || r.ms < best) best = r.ms;
+  }
+  return best;
+}
+function stageRanking(stage){
+  const best = stageBest(stage);
+  const rows = [];
+  for (const e of rally.entrants) {
+    if (isRetiredFor(e, stage)) continue;
+    const r = getResult(e.id, stage.id);
+    if (!r) continue;
+    rows.push({ entrant:e, ms:r.ms, penalty:r.penalty });
+  }
+  rows.sort((a,b) => a.ms - b.ms || a.entrant.order - b.entrant.order);
+  let prevRow = null;
+  rows.forEach((row, i) => {
+    row.pos = i + 1;
+    row.bestGap = best == null ? null : row.ms - best;
+    row.prevGap = prevRow == null ? null : row.ms - prevRow.ms;
+    row.prevPos = prevRow ? prevRow.pos : null;
+    row.prevName = prevRow ? prevRow.entrant.name : null;
+    prevRow = row;
+  });
+  return { best, rows };
+}
+function generalRanking(){
+  const cur = currentStage();
+  const counted = countingStages();
+  const rows = [], ec = [], retired = [];
+  for (const e of rally.entrants) {
+    if (e.retired) { retired.push(e); continue; }
+    let hasAll = true, total = 0;
+    for (const s of counted) {
+      const r = getResult(e.id, s.id);
+      if (!r) { hasAll = false; break; }
+      total += r.ms;
+    }
+    if (hasAll) {
+      rows.push({ entrant:e, total });
+    } else {
+      let partial = 0;
+      for (const s of counted) {
+        const r = getResult(e.id, s.id);
+        if (r) partial += r.ms;
+      }
+      ec.push({ entrant:e, partial });
+    }
+  }
+  rows.sort((a,b) => a.total - b.total || a.entrant.order - b.entrant.order);
+  const leaderTotal = rows.length ? rows[0].total : 0;
+  let prevRow = null;
+  rows.forEach((row, i) => {
+    row.pos = i + 1;
+    row.difLeader = row.total - leaderTotal;
+    row.difPrev = prevRow == null ? null : row.total - prevRow.total;
+    row.prevPos = prevRow ? prevRow.pos : null;
+    row.prevName = prevRow ? prevRow.entrant.name : null;
+    prevRow = row;
+  });
+  return { rows, ec, retired, cur, counted };
+}
+
+/* =========================================================
+   TABLA
+   ========================================================= */
+function renderTable(){
+  const gen = generalRanking();
+  const genById = {};
+  gen.rows.forEach(r => genById[r.entrant.id] = r);
+  const ecById = {};
+  gen.ec.forEach(r => ecById[r.entrant.id] = r);
+  const retiredIds = new Set(gen.retired.map(e => e.id));
+  const stageRanks = {};
+  rally.stages.forEach(s => stageRanks[s.id] = stageRanking(s));
+
+  const head = document.getElementById("table-head");
+  let h = '<th class="col-pos">Pos</th><th class="col-pilot">Piloto</th><th class="col-car">Coche</th>';
+  for (const s of rally.stages) {
+    const statusLabel = { closed:"Cerrado", live:"En curso", pending:"Pendiente", void:"Anulado" }[s.status];
+    const record = s.record ? "🏆 " + fmt(s.record) : "Sin récord";
+    h += `<th class="stage-head ${s.status}" data-stage="${s.id}">
+      <button class="stage-btn" type="button" onclick="openStage('${s.id}')">
+        <span class="stage-code">${s.code}</span>
+        <span class="stage-name">${escapeHtml(s.name)}</span>
+        <span class="stage-record">${record}</span>
+        <span class="stage-chip ${s.status}">${statusLabel}</span>
+      </button>
+    </th>`;
+  }
+  h += '<th class="col-total">Total</th><th class="col-dif">Dif. líder</th><th class="col-dif">Dif. ant.</th>';
+  head.innerHTML = h;
+
+  const body = document.getElementById("table-body");
+  let b = "";
+  const ordered = [
+    ...gen.rows.map(r => r.entrant),
+    ...gen.ec.map(r => r.entrant),
+    ...gen.retired
+  ];
+  for (const e of ordered) {
+    const ranked = genById[e.id];
+    const ec = ecById[e.id];
+    const isRetired = retiredIds.has(e.id);
+    const rowClass = isRetired ? "retired-row" : (ranked && ranked.pos === 1 ? "leader" : (ec ? "ec-row" : ""));
+    b += `<tr class="${rowClass}">`;
+
+    if (ranked) b += `<td class="col-pos pos">${ranked.pos}º</td>`;
+    else if (isRetired) b += `<td class="col-pos pos"><span class="badge ret">RET</span></td>`;
+    else b += `<td class="col-pos pos"><span class="badge ec">EC</span></td>`;
+
+    b += `<td class="col-pilot pilot">${escapeHtml(e.name)}</td>`;
+    b += `<td class="col-car car">${escapeHtml(e.car)}</td>`;
+
+    for (const s of rally.stages) {
+      const r = getResult(e.id, s.id);
+      const retiredHere = isRetiredFor(e, s);
+      const rank = stageRanks[s.id];
+      const rowRank = rank.rows.find(x => x.entrant.id === e.id);
+
+      if (retiredHere) {
+        b += '<td class="cell retired-cell">RET</td>';
+      } else if (r) {
+        const isBest = !r.penalty && rank.best != null && r.ms === rank.best;
+        const cls = r.penalty ? "penalty" : (isBest ? "best" : "valid");
+        const crown = (!r.penalty && s.record != null && r.ms === s.record) ? '<span class="crown">🏆</span>' : "";
+        const pbadge = r.penalty ? '<span class="badge p">P</span>' : "";
+        const provDot = s.status === "live" ? '<span class="prov-dot">•</span>' : "";
+        let gap = "";
+        if (rowRank) {
+          const ref = rowRank.prevName ? ` · <span class="gap-ref">${rowRank.prevPos}º ${escapeHtml(rowRank.prevName)}</span>` : "";
+          gap = `<span class="gap-line"><span class="gap-best">${fmtGap(rowRank.bestGap)}</span> · <span class="gap-prev">${fmtGap(rowRank.prevGap)}</span>${ref}${s.status === "live" ? ' <span class="prov">•</span>' : ""}</span>`;
+        }
+        b += `<td class="cell ${cls}"><span class="time">${fmt(r.ms)}</span>${crown}${pbadge}${provDot}${gap}</td>`;
+      } else if (s.status === "live" && !isRetired) {
+        b += '<td class="cell ec-cell">EC</td>';
+      } else {
+        b += '<td class="cell"></td>';
+      }
+    }
+
+    if (ranked) b += `<td class="col-total total">${fmt(ranked.total)}</td>`;
+    else if (ec) b += `<td class="col-total total partial">${ec.partial ? fmt(ec.partial) : "—"} <span class="badge ec">EC</span></td>`;
+    else b += '<td class="col-total total">—</td>';
+
+    b += `<td class="col-dif dif-leader">${ranked ? fmtGap(ranked.difLeader) : "—"}</td>`;
+    const prevRef = ranked && ranked.prevName ? `<span class="ref">${ranked.prevPos}º ${escapeHtml(ranked.prevName)}</span>` : "";
+    b += `<td class="col-dif dif-prev">${ranked ? fmtGap(ranked.difPrev) : "—"}${prevRef}</td>`;
+    b += "</tr>";
+  }
+  body.innerHTML = b;
+  updateStatus(gen);
+  requestAnimationFrame(scrollToLiveStage);
+}
+function scrollToLiveStage(){
+  const wrap = document.querySelector(".table-wrap");
+  const th = document.querySelector("th.stage-head.live") || document.querySelector("th.stage-head.pending");
+  if (!wrap || !th) return;
+  const pos = document.querySelector("th.col-pos");
+  const pilot = document.querySelector("th.col-pilot");
+  const car = document.querySelector("th.col-car");
+  const total = document.querySelector("th.col-total");
+  const difs = document.querySelectorAll("th.col-dif");
+  const left = (pos ? pos.offsetWidth : 0) + (pilot ? pilot.offsetWidth : 0) + (car ? car.offsetWidth : 0);
+  const rightSticky = window.matchMedia("(max-width: 760px)").matches;
+  const right = rightSticky ? 0 : (total ? total.offsetWidth : 0) + Array.from(difs).reduce((a, d) => a + d.offsetWidth, 0);
+  const visible = Math.max(0, wrap.clientWidth - left - right);
+  const target = th.offsetLeft - left - Math.max(0, (visible - th.offsetWidth) / 2);
+  const max = Math.max(0, wrap.scrollWidth - wrap.clientWidth);
+  wrap.scrollLeft = Math.max(0, Math.min(target, max));
+}
+function updateStatus(gen){
+  const cur = gen.cur;
+  if (!cur) return;
+  const active = rally.entrants.filter(e => !e.retired);
+  const missing = active.filter(e => !getResult(e.id, cur.id));
+  const chip = document.getElementById("stage-chip");
+  chip.innerHTML = `<span class="dot ${cur.status === "live" ? "live" : ""}"></span> ${cur.code} ${cur.status === "live" ? "En curso" : "Pendiente"}`;
+  chip.className = "chip " + (cur.status === "live" ? "live" : "ghost");
+  const missingChip = document.getElementById("missing-chip");
+  if (missing.length) {
+    missingChip.hidden = false;
+    missingChip.textContent = "Faltan " + missing.length + ": " + missing.map(e => e.name).join(", ");
+  } else {
+    missingChip.hidden = true;
+  }
+}
+
+/* =========================================================
+   PANEL DE TRAMO
+   ========================================================= */
+function openStage(id){
+  const s = rally.stages.find(x => x.id === id);
+  const rank = stageRanking(s);
+  const title = s.type === "sd" ? "Shakedown · " + s.name : s.code + " · " + s.name;
+  document.getElementById("stage-title").textContent = title;
+  const statusLabel = { closed:"Cerrado", live:"En curso", pending:"Pendiente", void:"Anulado" }[s.status];
+  document.getElementById("stage-sub").innerHTML = `<span class="stage-chip ${s.status}">${statusLabel}</span>`;
+
+  let html = "";
+  if (s.rec) {
+    html += `<div class="record-callout">
+      <div class="crown big">🏆</div>
+      <div>
+        <div class="muted small">Récord histórico</div>
+        <div class="record-big">${fmt(s.record)}</div>
+        <div class="muted small">${escapeHtml(s.rec.holder)} · ${escapeHtml(s.rec.car)} · ${escapeHtml(s.rec.rally)} · ${escapeHtml(s.rec.date)}</div>
+      </div>
+    </div>`;
+  } else {
+    html += `<div class="record-callout"><div><div class="muted small">Récord histórico</div><div class="record-big">Sin récord</div></div></div>`;
+  }
+
+  html += '<table class="panel-table"><thead><tr><th>Pos</th><th>Piloto</th><th>Coche</th><th>Tiempo</th><th>Dif. mejor</th><th>Dif. anterior</th><th>Referencia</th></tr></thead><tbody>';
+  for (const row of rank.rows) {
+    const cls = row.penalty ? "penalty" : (row.ms === rank.best ? "best" : "valid");
+    const crown = (!row.penalty && s.record != null && row.ms === s.record) ? " 🏆" : "";
+    const p = row.penalty ? ' <span class="badge p">P</span>' : "";
+    const prov = s.status === "live" ? ' <span class="prov">•</span>' : "";
+    html += `<tr>
+      <td>${row.pos}º</td>
+      <td>${escapeHtml(row.entrant.name)}</td>
+      <td class="muted">${escapeHtml(row.entrant.car)}</td>
+      <td class="cell ${cls} panel-time">${fmt(row.ms)}${crown}${p}${prov}</td>
+      <td>${fmtGap(row.bestGap)}</td>
+      <td>${fmtGap(row.prevGap)}</td>
+      <td>${row.prevName ? `${row.prevPos}º ${escapeHtml(row.prevName)}` : "—"}</td>
+    </tr>`;
+  }
+
+  for (const e of [...rally.entrants].sort((a,b) => a.order - b.order)) {
+    if (rank.rows.some(r => r.entrant.id === e.id)) continue;
+    if (e.retired) {
+      html += `<tr class="row-muted"><td>—</td><td>${escapeHtml(e.name)}</td><td>${escapeHtml(e.car)}</td><td>Retirado</td><td>—</td><td>—</td><td>—</td></tr>`;
+    } else {
+      const label = s.status === "live" ? "En curso" : "Pendiente";
+      html += `<tr class="row-muted"><td>—</td><td>${escapeHtml(e.name)}</td><td>${escapeHtml(e.car)}</td><td>${label}</td><td>—</td><td>—</td><td>—</td></tr>`;
+    }
+  }
+  html += "</tbody></table>";
+  document.getElementById("stage-content").innerHTML = html;
+  document.getElementById("stage-modal").classList.add("open");
+}
+function closeStage(){
+  document.getElementById("stage-modal").classList.remove("open");
+}
+
+/* =========================================================
+   RÉCORDS
+   ========================================================= */
+function normalize(s){
+  return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+function renderRecords(filter){
+  const f = normalize(filter || "");
+  const grid = document.getElementById("records-grid");
+  const list = records.filter(r => normalize(r.name).includes(f) || normalize(r.holder).includes(f) || normalize(r.car).includes(f));
+  if (!list.length) {
+    grid.innerHTML = '<p class="muted">No hay tramos que coincidan.</p>';
+    return;
+  }
+  grid.innerHTML = list.map(r => `
+    <article class="record-card">
+      <div class="record-top">
+        <div>
+          <div class="record-name">${escapeHtml(r.name)}${r.type === "SD" ? '<span class="tag">SD</span>' : ""}</div>
+          <div class="record-meta">${escapeHtml(r.holder)} · ${escapeHtml(r.car)}<br>${escapeHtml(r.rally)} · ${escapeHtml(r.date)}</div>
+        </div>
+        <div class="record-time">${fmt(r.record)}</div>
+      </div>
+      <table class="top-table">
+        <thead><tr><th>#</th><th>Piloto</th><th>Coche</th><th>Tiempo</th><th>Rally</th></tr></thead>
+        <tbody>
+          ${r.top.map(t => `<tr>
+            <td>${t.pos}</td>
+            <td>${escapeHtml(t.pilot)}</td>
+            <td>${escapeHtml(t.car)}</td>
+            <td class="mono">${fmt(t.time)}</td>
+            <td class="muted small">${escapeHtml(t.rally)}<br>${escapeHtml(t.date)}</td>
+          </tr>`).join("")}
+        </tbody>
+      </table>
+    </article>
+  `).join("");
+}
+
+/* =========================================================
+   HISTORIAL
+   ========================================================= */
+function renderHistory(){
+  document.getElementById("history-list").innerHTML = history.map(h => `
+    <div class="history-card ${h.active ? "active" : ""}">
+      <div>
+        <div class="history-name">${escapeHtml(h.name)} ${h.active ? '<span class="chip live small"><span class="dot live"></span>En curso</span>' : ""}</div>
+        <div class="muted small" style="margin-top:4px">${escapeHtml(h.date)} · ${escapeHtml(h.stages)} ${h.active ? "· Líder: " + escapeHtml(h.leader) : "· Ganador: " + escapeHtml(h.winner)}</div>
+      </div>
+      <div class="history-actions">
+        <button class="btn small" type="button" onclick="showTab('rally')">Abrir</button>
+        <button class="btn small" type="button" onclick="openConfig('new')">Duplicar</button>
+        <button class="btn small" type="button" onclick="toast('Excel generado (demo)')">Exportar</button>
+        <button class="btn small danger" type="button" onclick="deleteRally('${escapeHtml(h.name)}')">Borrar</button>
+      </div>
+    </div>
+  `).join("");
+}
+function deleteRally(name){
+  if (confirm('¿Seguro que quieres borrar "' + name + '"? Sus tiempos desaparecerán de los récords.')) {
+    toast("Rally borrado (demo)");
+  }
+}
+
+/* =========================================================
+   NAVEGACIÓN
+   ========================================================= */
+function showTab(name){
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.view === name));
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + name));
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+let toastTimer = null;
+function toast(msg, type){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show" + (type ? " " + type : "");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = "toast" + (type ? " " + type : ""); }, 3400);
+}
+
+/* =========================================================
+   RELOJ Y CUENTA ATRÁS
+   ========================================================= */
+function updateClock(){
+  const now = new Date();
+  document.getElementById("clock").textContent = now.toLocaleTimeString("es-ES", { hour12:false });
+  const rem = (20 - (now.getSeconds() % 20)) % 20;
+  const cd = document.getElementById("countdown");
+  cd.querySelector(".num").textContent = String(rem).padStart(2, "0");
+  cd.classList.toggle("zero", rem === 0);
+  cd.classList.toggle("warn", rem >= 1 && rem <= 5);
+  cd.classList.toggle("hot", rem >= 6);
+}
+function openInvite(){
+  const base = location.protocol === "file:" ? location.href.split("?")[0] : location.origin + location.pathname;
+  const url = base + "?ver=1";
+  document.getElementById("invite-url").value = url;
+  document.getElementById("open-invite").href = url;
+  document.getElementById("invite-modal").classList.add("open");
+}
+
+/* =========================================================
+   NUEVO RALLY / CONFIGURACIÓN
+   ========================================================= */
+let configMode = "edit";
+function todayLabel(){
+  return new Date().toLocaleDateString("es-ES", { day:"numeric", month:"short", year:"numeric" });
+}
+function renderRallyMeta(){
+  document.getElementById("rally-sub").textContent = rally.name + " · " + rally.date;
+}
+function openConfig(mode){
+  configMode = mode === "new" ? "new" : "edit";
+  const isNew = configMode === "new";
+  document.getElementById("cfg-name").value = isNew ? ("Rally " + todayLabel()) : rally.name;
+  document.getElementById("config-title").textContent = isNew ? "Nuevo rally" : "Configuración del rally";
+  document.getElementById("save-config").textContent = isNew ? "Crear rally" : "Guardar cambios";
+  document.getElementById("config-note").textContent = isNew
+    ? "Se creará un rally nuevo con los tiempos a cero. El rally actual pasará al historial."
+    : "Guardar cambios no borra los tiempos. Para empezar de cero, usa Nuevo rally.";
+  document.getElementById("config-date-hint").textContent =
+    "La fecha se asigna automáticamente al crear el rally: " + (isNew ? todayLabel() : rally.date) + ".";
+  document.getElementById("config-modal").classList.add("open");
+}
+function createRally(){
+  const name = document.getElementById("cfg-name").value.trim() || ("Rally " + todayLabel());
+  if (!confirm("Se guardará el rally actual en el historial y empezará un rally nuevo con los tiempos a cero. ¿Continuar?")) return;
+
+  const oldGen = generalRanking();
+  const oldLeader = oldGen.rows.length ? oldGen.rows[0].entrant.name : "—";
+  const oldStages = rally.stages;
+  const oldTc = oldStages.filter(s => s.type !== "sd");
+  const oldClosed = oldTc.filter(s => s.status === "closed").length;
+  const oldTcTotal = oldTc.length;
+  const oldSD = oldStages.find(s => s.type === "sd");
+
+  const stageInputs = [...document.querySelectorAll("#stage-config-list .config-row input")].map(i => i.value.trim()).filter(Boolean);
+  const sdOn = document.getElementById("cfg-sd").checked;
+  const sdName = document.getElementById("cfg-sd-name").value.trim();
+  const newStages = [];
+  if (sdOn) {
+    const sameSd = oldSD && oldSD.name === sdName;
+    newStages.push({
+      id: "SD",
+      code: "SD",
+      name: sdName || "Shakedown",
+      type: "sd",
+      status: "closed",
+      record: sameSd ? oldSD.record : null,
+      rec: sameSd ? oldSD.rec : null
+    });
+  }
+  stageInputs.forEach((stageName, i) => {
+    const old = oldStages.find(s => s.type !== "sd" && s.name === stageName);
+    newStages.push({
+      id: "TC" + (i + 1),
+      code: "TC-" + (i + 1),
+      name: stageName,
+      status: "pending",
+      record: old ? old.record : null,
+      rec: old ? old.rec : null
+    });
+  });
+
+  const pilotRows = [...document.querySelectorAll("#pilot-config-list .config-row")];
+  const newEntrants = pilotRows.map((row, i) => {
+    const inputs = row.querySelectorAll("input");
+    return {
+      id: "p" + i,
+      name: inputs[0] && inputs[0].value.trim() ? inputs[0].value.trim() : "Piloto " + (i + 1),
+      car: inputs[1] ? inputs[1].value.trim() : "",
+      order: i,
+      retired: false,
+      retiredAt: null
+    };
+  });
+  const tcCount = newStages.filter(s => s.type !== "sd").length;
+
+  if (history[0] && history[0].active) {
+    history[0].active = false;
+    history[0].status = "Terminado";
+    history[0].winner = oldLeader;
+    history[0].stages = oldClosed + " de " + oldTcTotal;
+  }
+
+  rally.name = name;
+  rally.date = todayLabel();
+  rally.stages = newStages;
+  rally.entrants = newEntrants;
+  rally.results = {};
+
+  history.unshift({
+    name: name,
+    date: rally.date,
+    status: "Activo",
+    leader: "—",
+    stages: "0 de " + tcCount,
+    active: true
+  });
+
+  document.getElementById("config-modal").classList.remove("open");
+  showTab("rally");
+  renderRallyMeta();
+  renderTable();
+  renderHistory();
+  window.scrollTo(0, 0);
+  toast("Nuevo rally creado. Tiempos a cero.");
+}
+
+/* =========================================================
+   PANTALLA ENCENDIDA
+   ========================================================= */
+let wakeWanted = false;
+let wakeSentinel = null;
+function updateWakeUI(){
+  const b = document.getElementById("wake-btn");
+  const l = document.getElementById("wake-label");
+  b.classList.toggle("active", wakeWanted);
+  l.textContent = wakeWanted ? "Pantalla: siempre" : "Pantalla: normal";
+}
+async function requestWake(){
+  if (!("wakeLock" in navigator)) {
+    toast("Este navegador no permite mantener la pantalla encendida.");
+    wakeWanted = false;
+    updateWakeUI();
+    return;
+  }
+  try {
+    wakeSentinel = await navigator.wakeLock.request("screen");
+    wakeSentinel.addEventListener("release", () => { wakeSentinel = null; });
+    toast("Pantalla siempre encendida");
+  } catch (err) {
+    toast("No se pudo mantener la pantalla encendida.");
+    wakeWanted = false;
+    updateWakeUI();
+  }
+}
+
+/* =========================================================
+   ARRANQUE
+   ========================================================= */
+document.addEventListener("DOMContentLoaded", () => {
+  renderRallyMeta();
+  renderTable();
+  renderRecords("");
+  renderHistory();
+  updateClock();
+  setInterval(updateClock, 250);
+
+  // Tabs
+  document.querySelectorAll(".tab").forEach(btn => {
+    btn.addEventListener("click", () => showTab(btn.dataset.view));
+  });
+
+  // Mostrar diferencias
+  document.getElementById("gaps-toggle").addEventListener("change", (e) => {
+    document.getElementById("rally-table").classList.toggle("show-gaps", e.target.checked);
+  });
+
+  // Login
+  document.getElementById("login-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const val = document.getElementById("password").value;
+    if (val === "Payet123") {
+      document.getElementById("login").classList.add("hidden");
+      document.getElementById("login-error").textContent = "";
+      toast("Sesión iniciada");
+      setTimeout(() => toast("🏆 Nuevo récord histórico: Pepe · 2.10.500 · Muncó", "record"), 1300);
+    } else {
+      document.getElementById("login-error").textContent = "Contraseña incorrecta.";
+    }
+  });
+  document.getElementById("demo-fill").addEventListener("click", () => {
+    document.getElementById("password").value = "Payet123";
+    document.getElementById("password").focus();
+  });
+
+  // Salir
+  document.getElementById("logout-btn").addEventListener("click", () => {
+    document.getElementById("login").classList.remove("hidden");
+    document.getElementById("password").value = "";
+    document.getElementById("login-error").textContent = "";
+    document.getElementById("password").focus();
+  });
+
+  // Tema
+  document.getElementById("theme-btn").addEventListener("click", () => {
+    const html = document.documentElement;
+    const dark = html.getAttribute("data-theme") === "dark";
+    html.setAttribute("data-theme", dark ? "light" : "dark");
+    document.getElementById("theme-label").textContent = dark ? "Oscuro" : "Claro";
+    document.getElementById("theme-btn").querySelector(".ico").textContent = dark ? "🌙" : "☀️";
+  });
+
+  // Invitar a visualizar
+  document.getElementById("invite-btn").addEventListener("click", openInvite);
+  document.getElementById("copy-invite").addEventListener("click", async () => {
+    const input = document.getElementById("invite-url");
+    try {
+      await navigator.clipboard.writeText(input.value);
+      toast("Enlace copiado");
+    } catch (err) {
+      input.select();
+      try { document.execCommand("copy"); toast("Enlace copiado"); }
+      catch (e) { toast("No se pudo copiar; selecciona el enlace a mano."); }
+    }
+  });
+
+  // Pantalla encendida
+  document.getElementById("wake-btn").addEventListener("click", async () => {
+    wakeWanted = !wakeWanted;
+    updateWakeUI();
+    if (wakeWanted) {
+      await requestWake();
+    } else {
+      if (wakeSentinel) {
+        try { await wakeSentinel.release(); } catch (e) {}
+        wakeSentinel = null;
+      }
+      toast("Pantalla normal");
+    }
+  });
+  document.addEventListener("visibilitychange", async () => {
+    if (document.visibilityState === "visible" && wakeWanted && !wakeSentinel) await requestWake();
+  });
+
+  // Modales
+  document.getElementById("stage-modal").addEventListener("click", (e) => {
+    if (e.target.id === "stage-modal" || e.target.matches("[data-close-stage]")) closeStage();
+  });
+  document.getElementById("config-modal").addEventListener("click", (e) => {
+    if (e.target.id === "config-modal" || e.target.matches("[data-close-config]")) document.getElementById("config-modal").classList.remove("open");
+    if (e.target.matches("[data-remove]")) {
+      const row = e.target.closest(".config-row");
+      if (row) row.remove();
+    }
+  });
+  document.getElementById("invite-modal").addEventListener("click", (e) => {
+    if (e.target.id === "invite-modal" || e.target.matches("[data-close-invite]")) {
+      document.getElementById("invite-modal").classList.remove("open");
+    }
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeStage();
+      document.getElementById("invite-modal").classList.remove("open");
+      document.getElementById("config-modal").classList.remove("open");
+    }
+  });
+
+  // Configuración
+  document.getElementById("config-btn").addEventListener("click", () => openConfig("edit"));
+  document.getElementById("new-rally-btn").addEventListener("click", () => openConfig("new"));
+  document.getElementById("save-config").addEventListener("click", () => {
+    if (configMode === "new") { createRally(); return; }
+    document.getElementById("config-modal").classList.remove("open");
+    toast("Configuración guardada. Los tiempos no se tocan.");
+  });
+  document.getElementById("export-btn").addEventListener("click", () => toast("Excel de ejemplo generado (demo)"));
+
+  // Añadir tramo
+  document.getElementById("add-stage").addEventListener("click", () => {
+    const input = document.getElementById("new-stage");
+    const val = input.value.trim();
+    if (!val) return;
+    const list = document.getElementById("stage-config-list");
+    const n = list.querySelectorAll(".config-row").length + 1;
+    const row = document.createElement("div");
+    row.className = "config-row";
+    row.innerHTML = `<span class="code">TC-${n}</span><input value="${escapeHtml(val)}"><button class="icon-btn" type="button" data-remove>✕</button>`;
+    list.appendChild(row);
+    input.value = "";
+    toast("Tramo añadido a la configuración (demo)");
+  });
+
+  // Añadir piloto
+  document.getElementById("add-pilot").addEventListener("click", () => {
+    const name = document.getElementById("new-pilot").value.trim();
+    const car = document.getElementById("new-car").value.trim();
+    if (!name) return;
+    const list = document.getElementById("pilot-config-list");
+    const row = document.createElement("div");
+    row.className = "config-row pilot";
+    row.innerHTML = `<input value="${escapeHtml(name)}"><input value="${escapeHtml(car)}"><button class="icon-btn" type="button" data-remove>✕</button>`;
+    list.appendChild(row);
+    document.getElementById("new-pilot").value = "";
+    document.getElementById("new-car").value = "";
+    toast("Piloto añadido a la configuración (demo)");
+  });
+
+  // Buscador de récords
+  document.getElementById("records-search").addEventListener("input", (e) => {
+    renderRecords(e.target.value);
+  });
+
+  // Conexión
+  const updateConnection = () => {
+    const ok = navigator.onLine;
+    document.getElementById("conn-dot").className = "dot " + (ok ? "ok" : "warn");
+    document.getElementById("conn-text").textContent = ok ? "Conectado" : "Reconectando…";
+  };
+  window.addEventListener("online", updateConnection);
+  window.addEventListener("offline", updateConnection);
+  updateConnection();
+
+  // Enlace de invitado: vista de solo lectura, sin contraseña
+  if (new URLSearchParams(location.search).has("ver")) {
+    document.getElementById("login").classList.add("hidden");
+    document.body.classList.add("spectator");
+    document.getElementById("spectator-chip").hidden = false;
+  }
+});
+</script>
+</body>
+</html>

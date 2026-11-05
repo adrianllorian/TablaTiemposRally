@@ -1,0 +1,120 @@
+<div class="table-wrap" #wrap>
+  <table id="rally-table" [class.show-gaps]="showGaps()">
+    <thead>
+      <tr>
+        <th class="col-pos">Pos</th>
+        <th class="col-pilot">Piloto</th>
+        <th class="col-car">Coche</th>
+        @for (stage of view().stages; track stage.id) {
+          <th
+            class="stage-head"
+            [class.live]="stage.status === 'LIVE'"
+            [class.pending]="stage.status === 'PENDING'"
+            (click)="onStage(stage)"
+          >
+            <button class="stage-btn" type="button">
+              <span class="stage-code">{{ stage.code }}</span>
+              <span class="stage-name">{{ stage.name }}</span>
+              <span class="stage-record">
+                @if (stage.recordMs != null) {
+                  🏆 {{ stage.recordMs | raceTime }}
+                } @else {
+                  Sin récord
+                }
+              </span>
+              <span
+                class="stage-chip"
+                [class.closed]="stage.status === 'CLOSED'"
+                [class.live]="stage.status === 'LIVE'"
+                [class.pending]="stage.status === 'PENDING'"
+                [class.void]="stage.status === 'VOID'"
+              >{{ statusLabel(stage) }}</span>
+            </button>
+          </th>
+        }
+        <th class="col-total">Total</th>
+        <th class="col-dif">Dif. líder</th>
+        <th class="col-dif">Dif. ant.</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of view().general; track row.entrantId) {
+        <tr
+          [class.retired-row]="row.status === 'RETIRED'"
+          [class.leader]="row.leader"
+          [class.ec-row]="row.status === 'EC'"
+        >
+          <td class="col-pos pos">
+            @if (row.status === 'RANKED') {
+              {{ row.position }}º
+            } @else if (row.status === 'RETIRED') {
+              <span class="badge ret">RET</span>
+            } @else {
+              <span class="badge ec">EC</span>
+            }
+          </td>
+          <td class="col-pilot pilot">{{ row.name }}</td>
+          <td class="col-car car">{{ row.car }}</td>
+
+          @for (stage of view().stages; track stage.id) {
+            @if (cell(stage, row.entrantId); as c) {
+              @if (c.kind === 'RETIRED') {
+                <td class="cell retired-cell" (click)="onCell(stage, row, c)">RET</td>
+              } @else if (c.kind === 'EC') {
+                <td class="cell ec-cell" (click)="onCell(stage, row, c)">EC</td>
+              } @else if (c.kind === 'NONE') {
+                <td class="cell" (click)="onCell(stage, row, c)"></td>
+              } @else {
+                <td [class]="cellClass(c)" (click)="onCell(stage, row, c)">
+                  <span class="time">{{ c.millis | raceTime }}</span>
+                  @if (c.record) {
+                    <span class="crown">🏆</span>
+                  }
+                  @if (c.kind === 'PENALTY') {
+                    <span class="badge p">P</span>
+                  }
+                  @if (c.provisional) {
+                    <span class="prov-dot">•</span>
+                  }
+                  <span class="gap-line">
+                    <span class="gap-best">{{ c.bestGapMs | raceGap }}</span>
+                    ·
+                    <span class="gap-prev">{{ c.prevGapMs | raceGap }}</span>
+                    @if (c.prevName) {
+                      · <span class="gap-ref">{{ c.prevPosition }}º {{ c.prevName }}</span>
+                    }
+                    @if (c.provisional) {
+                      <span class="prov">•</span>
+                    }
+                  </span>
+                </td>
+              }
+            }
+          }
+
+          <td class="col-total total" [class.partial]="row.status === 'EC'">
+            @if (row.status === 'RANKED') {
+              {{ row.totalMs | raceTime }}
+            } @else if (row.status === 'EC') {
+              @if (row.partialMs) {
+                {{ row.partialMs | raceTime }}
+              } @else {
+                —
+              }
+              <span class="badge ec">EC</span>
+            } @else {
+              —
+            }
+          </td>
+          <td class="col-dif dif-leader">{{ row.difLeaderMs | raceGap }}</td>
+          <td class="col-dif dif-prev">
+            {{ row.difPrevMs | raceGap }}
+            @if (row.prevName) {
+              <span class="ref">{{ row.prevPosition }}º {{ row.prevName }}</span>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

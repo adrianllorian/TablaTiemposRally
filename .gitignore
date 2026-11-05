@@ -1,0 +1,16 @@
+# Base de datos H2, logo subido y copias de seguridad
+/backend/data/
+/data/
+
+# JDK portable usado solo en local
+/tools/
+
+# Logs
+*.log
+
+# IDE y sistema operativo
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

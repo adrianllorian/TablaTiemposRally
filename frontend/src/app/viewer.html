@@ -1,0 +1,124 @@
+@if (loading()) {
+  <div class="login">
+    <div class="login-card">
+      <div class="logo big">
+        @if (logoUrl()) {
+          <img [src]="logoUrl()!" alt="Logo">
+        } @else {
+          TT
+        }
+      </div>
+      <h1>{{ appName() }}</h1>
+      <p>Cargando rally…</p>
+    </div>
+  </div>
+} @else if (error()) {
+  <div class="login">
+    <div class="login-card">
+      <div class="logo big">
+        @if (logoUrl()) {
+          <img [src]="logoUrl()!" alt="Logo">
+        } @else {
+          TT
+        }
+      </div>
+      <h1>{{ appName() }}</h1>
+      <p>{{ error() }}</p>
+      <a class="btn primary" href="/#/">Volver</a>
+    </div>
+  </div>
+} @else if (view(); as v) {
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">
+          @if (logoUrl()) {
+            <img [src]="logoUrl()!" alt="Logo">
+          } @else {
+            TT
+          }
+        </div>
+        <div>
+          <h1>{{ appName() }}</h1>
+          <p>{{ v.name }} · {{ v.date | dateLabel }}</p>
+        </div>
+      </div>
+
+      <app-clock />
+
+      <div class="toolbar">
+        <button class="btn" type="button" (click)="toggleWake()" [class.active]="ui.wake()">
+          <span class="ico">💡</span>
+          <span class="btn-label">{{ ui.wake() ? 'Pantalla: siempre' : 'Pantalla: normal' }}</span>
+        </button>
+        <button class="btn" type="button" (click)="ui.toggleTheme()" [class.active]="ui.theme() === 'dark'">
+          <span class="ico">{{ ui.theme() === 'dark' ? '☀️' : '🌙' }}</span>
+          <span class="btn-label">{{ ui.theme() === 'dark' ? 'Claro' : 'Oscuro' }}</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="statusbar">
+      <span
+        class="chip"
+        [class.live]="v.currentStageStatus === 'LIVE'"
+        [class.ghost]="v.currentStageStatus !== 'LIVE'"
+      >
+        <span class="dot" [class.live]="v.currentStageStatus === 'LIVE'"></span>
+        @if (v.currentStageStatus === 'FINISHED') {
+          Rally terminado
+        } @else {
+          {{ v.currentStageCode }} {{ v.currentStageStatus === 'LIVE' ? 'En curso' : 'Pendiente' }}
+        }
+      </span>
+      @if (v.missingNames.length) {
+        <span class="chip warn">Faltan {{ v.missingNames.length }}: {{ v.missingNames.join(', ') }}</span>
+      }
+      <span class="chip ghost">Solo lectura</span>
+      <span class="chip ghost">
+        <span class="dot" [class.ok]="online() && connected()" [class.warn]="!online() || !connected()"></span>
+        {{ online() && connected() ? 'Conectado' : 'Reconectando…' }}
+      </span>
+    </div>
+
+    <div class="table-toolbar">
+      <label class="switch">
+        <input type="checkbox" [checked]="showGaps()" (change)="toggleGaps($event)" />
+        <span class="slider"></span>
+        <span>Mostrar diferencias</span>
+      </label>
+      <span class="hint">
+        Diferencias por tramo: <b>mejor</b> · <b>anterior</b> · <b>referencia</b>. Sin tooltips:
+        todo visible.
+      </span>
+    </div>
+
+    <app-rally-table
+      [view]="v"
+      [editable]="false"
+      [showGaps]="showGaps()"
+      (openStage)="stage.set($event)"
+    />
+
+    <div class="legend">
+      <span><span class="sw purple"></span>Morado · mejor del tramo</span>
+      <span><span class="sw green"></span>Verde · válido</span>
+      <span><span class="sw red"></span>Rojo · penalización</span>
+      <span>🏆 Récord histórico</span>
+      <span><span class="prov">•</span> Provisional</span>
+      <span><span class="gap-ref">2º Carlos</span> referencia del anterior</span>
+      <span><span class="badge ec">EC</span> En curso</span>
+      <span><span class="badge ret">RET</span> Retirado</span>
+    </div>
+
+    <footer class="footer">Tabla de tiempos creado por Bochi · vista de invitado · solo lectura</footer>
+
+    @if (stage(); as selectedStage) {
+      <app-stage-panel [view]="v" [stage]="selectedStage" (close)="stage.set(null)" />
+    }
+
+    @if (toast()) {
+      <div class="toast show">{{ toast() }}</div>
+    }
+  </div>
+}
