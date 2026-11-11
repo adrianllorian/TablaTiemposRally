@@ -124,7 +124,7 @@ Para detener el servidor, pulsa `Ctrl + C` en la terminal.
 SHA-256 del JAR:
 
 ```text
-EBAEA26FAE2A2663FBEAA5A5BB41B29866B07B7E722C7BA65CB465E610C09F0E
+2E48CDB0DAFC6BD1271D1133ED622D08C92B144E0173CAFB57BD5130B75C7912
 ```
 
 ### Cambiar el puerto
@@ -141,7 +141,8 @@ También se puede fijar en `backend/src/main/resources/application.properties` s
 
 ## Datos y copias de seguridad
 
-La base de datos es **H2 en archivo** y se guarda junto al directorio desde el que arrancas la aplicación:
+La base de datos es **H2 en archivo** y se guarda en una carpeta `data`
+**junto al JAR**:
 
 ```text
 data/
@@ -149,10 +150,33 @@ data/
 └── logo/                   # logo subido desde la app
 ```
 
+Si mueves el JAR, mueve también la carpeta `data`. Si mueves solo el JAR, la
+aplicación creará un `data` nuevo y vacío junto a la nueva ubicación. Los datos
+antiguos no se borran: siguen en la carpeta anterior.
+
 - Para hacer una copia de seguridad, **para la aplicación** y copia la carpeta `data/`.
 - Para restaurarla, deja la carpeta `data/` junto al JAR y arranca de nuevo.
 - Para empezar de cero (borrar rallies, récords, contraseña y logo), para la aplicación y elimina la carpeta `data/`.
 - No subas la carpeta `data/` a GitHub: contiene la contraseña cifrada, los rallies y el logo.
+
+### Sesión
+
+La sesión dura **30 días** por defecto y la cookie también es persistente: si
+cierras y vuelves a abrir el navegador, la sesión se mantiene hasta que caduque
+o pulses **Salir**. Puedes cambiarla con `SESSION_TIMEOUT`:
+
+```powershell
+$env:SESSION_TIMEOUT = "8h"
+java -jar tabla-tiempos-1.0.0.jar
+```
+
+O con los dos argumentos:
+
+```powershell
+java -jar tabla-tiempos-1.0.0.jar --server.servlet.session.timeout=8h --server.servlet.session.cookie.max-age=8h
+```
+
+Valores habituales: `30m`, `2h`, `8h`, `1d`, `30d`.
 
 ---
 

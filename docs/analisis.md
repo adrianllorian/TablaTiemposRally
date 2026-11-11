@@ -51,7 +51,7 @@ Fuera de alcance de la primera versión:
 
 ## 3. Acceso y permisos
 
-- Una sola contraseña fija: `Payet123`.
+- Una sola contraseña, configurada en el primer arranque.
 - La contraseña se valida en el backend. No se envía al frontend ni se expone en el JavaScript.
 - Todos los que entran con la contraseña pueden editar todo: tiempos, configuración, pilotos, tramos, exportar y borrar.
 - No hay nombre de usuario ni registro de quién hizo cada cambio.
@@ -256,7 +256,7 @@ Empate en la general: se mantiene el orden anterior (orden estable).
 ### 6.1 Login
 
 - Logo, nombre de la app, campo de contraseña y botón de entrar.
-- Contraseña fija `Payet123`.
+- Contraseña configurada en el primer arranque.
 - Sin selección de nombre.
 
 ### 6.2 Pantalla principal del rally

@@ -3,6 +3,7 @@ package com.tablatiempos.service;
 import com.tablatiempos.domain.AppSettings;
 import com.tablatiempos.dto.SetupStatus;
 import com.tablatiempos.repo.AppSettingsRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,15 +20,17 @@ import java.util.Locale;
 @Service
 public class AppSettingsService {
 
-    private static final Path LOGO_DIR = Path.of("data", "logo");
     private static final long MAX_LOGO_BYTES = 2 * 1024 * 1024;
     private static final String DEFAULT_APP_NAME = "Tabla Tiempos Rally";
 
     private final AppSettingsRepository repository;
+    private final Path logoDir;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public AppSettingsService(AppSettingsRepository repository) {
+    public AppSettingsService(AppSettingsRepository repository,
+                              @Value("${app.data.dir}") String dataDir) {
         this.repository = repository;
+        this.logoDir = Path.of(dataDir, "logo");
     }
 
     @Transactional(readOnly = true)
@@ -111,7 +114,7 @@ public class AppSettingsService {
         if (settings == null || settings.logoFileName == null || settings.logoFileName.isBlank()) {
             return null;
         }
-        Path path = LOGO_DIR.resolve(settings.logoFileName);
+        Path path = logoDir.resolve(settings.logoFileName);
         if (!Files.exists(path)) {
             return null;
         }
@@ -158,12 +161,12 @@ public class AppSettingsService {
             default -> "img";
         };
         try {
-            Files.createDirectories(LOGO_DIR);
+            Files.createDirectories(logoDir);
             if (settings.logoFileName != null && !settings.logoFileName.isBlank()) {
-                Files.deleteIfExists(LOGO_DIR.resolve(settings.logoFileName));
+                Files.deleteIfExists(logoDir.resolve(settings.logoFileName));
             }
             String fileName = "logo-" + System.currentTimeMillis() + "." + extension;
-            Files.copy(logo.getInputStream(), LOGO_DIR.resolve(fileName));
+            Files.copy(logo.getInputStream(), logoDir.resolve(fileName));
             settings.logoFileName = fileName;
             settings.logoContentType = contentType;
         } catch (IOException ex) {

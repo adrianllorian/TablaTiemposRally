@@ -459,8 +459,6 @@
       <div class="login-error" id="login-error"></div>
       <button class="btn primary" type="submit">Entrar</button>
     </form>
-    <button class="linkish" type="button" id="demo-fill">Usar la contraseña de demo</button>
-    <p class="hint" style="margin-top:8px">Contraseña de demo: <b>Payet123</b></p>
   </div>
 </div>
 
@@ -1378,18 +1376,14 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("login-form").addEventListener("submit", (e) => {
     e.preventDefault();
     const val = document.getElementById("password").value;
-    if (val === "Payet123") {
+    if (val.trim().length > 0) {
       document.getElementById("login").classList.add("hidden");
       document.getElementById("login-error").textContent = "";
       toast("Sesión iniciada");
       setTimeout(() => toast("🏆 Nuevo récord histórico: Pepe · 2.10.500 · Muncó", "record"), 1300);
     } else {
-      document.getElementById("login-error").textContent = "Contraseña incorrecta.";
+      document.getElementById("login-error").textContent = "Escribe una contraseña.";
     }
-  });
-  document.getElementById("demo-fill").addEventListener("click", () => {
-    document.getElementById("password").value = "Payet123";
-    document.getElementById("password").focus();
   });
 
   // Salir
