@@ -1,10 +1,36 @@
 # Tabla Tiempos Rally
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=openjdk&logoColor=white" alt="Java 21">
+  <img src="https://img.shields.io/badge/Spring%20Boot-4.1.2-6DB33F?style=flat-square&logo=springboot&logoColor=white" alt="Spring Boot">
+  <img src="https://img.shields.io/badge/Angular-22-DD0031?style=flat-square&logo=angular&logoColor=white" alt="Angular">
+  <img src="https://img.shields.io/badge/H2-003B57?style=flat-square&logo=databricks&logoColor=white" alt="H2">
+  <img src="https://img.shields.io/badge/licencia-MIT-blue?style=flat-square" alt="MIT">
+</p>
+
+<p align="center">
+  <a href="https://github.com/adrianllorian/TablaTiemposRally/releases/latest/download/tabla-tiempos-1.0.0.jar">
+    <img src="https://img.shields.io/badge/Descargar_JAR-2ea44f?style=for-the-badge&logo=java&logoColor=white" alt="Descargar JAR">
+  </a>
+</p>
+
+<p align="center">
+  <strong>Java 21+ · 70 MB · Windows / Linux / macOS</strong>
+</p>
+
 Aplicación web para llevar los tiempos de un rally de **Assetto Corsa** en directo, sustituyendo el clásico Excel compartido por Skype.
 
 Una sola URL para todos: los participantes entran con una contraseña, ven la tabla actualizarse en vivo y pueden editar tiempos, penalizaciones y retiradas. Incluye clasificación general, diferencias, récords históricos, historial de rallies, enlace de invitado en solo lectura y exportación a Excel.
 
 > Creado por **Bochi**. Proyecto no oficial, sin relación con Kunos Simulazioni.
+
+---
+
+## Vista previa
+
+<p align="center">
+  <img src="docs/screenshot.png" alt="Configuración inicial de Tabla Tiempos Rally" width="860">
+</p>
 
 ---
 
@@ -70,28 +96,36 @@ Una sola URL para todos: los participantes entran con una contraseña, ven la ta
 
 ### Pasos
 
-1. Entra en la pestaña **Releases** de este repositorio.
-2. Descarga el archivo `tabla-tiempos-*.jar`.
-3. Crea una carpeta para la aplicación, por ejemplo `TablaTiempos`, y copia ahí el JAR.
-4. Abre una terminal en esa carpeta y ejecuta:
+1. Descarga el JAR desde la página de [Releases](https://github.com/adrianllorian/TablaTiemposRally/releases/latest) o directamente:
+   [`tabla-tiempos-1.0.0.jar`](https://github.com/adrianllorian/TablaTiemposRally/releases/latest/download/tabla-tiempos-1.0.0.jar)
+2. Crea una carpeta para la aplicación, por ejemplo `TablaTiempos`, y copia ahí el JAR.
+3. Abre una terminal en esa carpeta y ejecuta:
 
    ```bash
    java -jar tabla-tiempos-1.0.0.jar
    ```
 
-5. Abre en el navegador:
+4. Abre en el navegador:
 
    ```text
    http://localhost:8888
    ```
 
-6. En el primer arranque la app pide:
+5. En el primer arranque la app pide:
    - la **contraseña** que se usará para entrar,
    - el **logo** de la aplicación.
 
    El logo y la contraseña se guardan para toda la aplicación. Después se pueden cambiar en `Configuración → Ajustes de la aplicación`.
 
 Para detener el servidor, pulsa `Ctrl + C` en la terminal.
+
+### Verificar la descarga
+
+SHA-256 del JAR:
+
+```text
+EBAEA26FAE2A2663FBEAA5A5BB41B29866B07B7E722C7BA65CB465E610C09F0E
+```
 
 ### Cambiar el puerto
 
