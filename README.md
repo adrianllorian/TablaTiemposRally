@@ -22,8 +22,6 @@ Aplicación web para llevar los tiempos de un rally de **Assetto Corsa** en dire
 
 Una sola URL para todos: los participantes entran con una contraseña, ven la tabla actualizarse en vivo y pueden editar tiempos, penalizaciones y retiradas. Incluye clasificación general, diferencias, récords históricos, historial de rallies, enlace de invitado en solo lectura y exportación a Excel.
 
-> Creado por **Bochi**. Proyecto no oficial, sin relación con Kunos Simulazioni.
-
 ---
 
 ## Vista previa
@@ -40,7 +38,6 @@ Una sola URL para todos: los participantes entran con una contraseña, ven la ta
 - [Descargar y ejecutar](#descargar-y-ejecutar)
 - [Datos y copias de seguridad](#datos-y-copias-de-seguridad)
 - [Compartir con los participantes](#compartir-con-los-participantes)
-- [Despliegue con Docker / Portainer](#despliegue-con-docker--portainer)
 - [Stack técnico](#stack-técnico)
 - [Desarrollo](#desarrollo)
 - [Compilar el JAR definitivo](#compilar-el-jar-definitivo)
@@ -203,45 +200,6 @@ https://tu-dominio/#/ver/TOKEN
 ```
 
 Quien lo abra verá la tabla en directo, sin contraseña, sin configuración, sin historial y sin récords.
-
----
-
-## Despliegue con Docker / Portainer
-
-El repositorio incluye un archivo [`docker-compose.yml`](docker-compose.yml) preparado para ejecutar el JAR en un servidor Ubuntu con Portainer.
-
-### 1. Copiar el JAR al servidor
-
-```bash
-scp tabla-tiempos-1.0.0.jar ubuntu@TU_SERVIDOR:/home/ubuntu/tablaTiempos/
-```
-
-### 2. Permisos
-
-El contenedor se ejecuta con el usuario `ubuntu` (UID/GID `1000`) para que la base de datos no quede propiedad de `root`:
-
-```bash
-sudo chown -R 1000:1000 /home/ubuntu/tablaTiempos
-```
-
-### 3. Crear el stack en Portainer
-
-1. Entra en Portainer.
-2. **Stacks → Add stack**.
-3. Nombre: `tabla-tiempos`.
-4. En **Web editor**, pega el contenido de `docker-compose.yml`.
-5. Pulsa **Deploy the stack**.
-
-### 4. Acceder
-
-```text
-http://IP_DEL_SERVIDOR:8888
-```
-
-- El JAR se monta desde `/home/ubuntu/tablaTiempos` en `/app`.
-- Los datos quedan en `/home/ubuntu/tablaTiempos/data`.
-- Si actualizas el JAR, cambia el nombre del archivo en el `command` del stack o usa siempre el mismo nombre.
-- Si usas Caddy, Nginx o Cloudflare Tunnel delante, cambia `"8888:8888"` por `"127.0.0.1:8888:8888"` para no exponer el puerto directamente a internet.
 
 ---
 

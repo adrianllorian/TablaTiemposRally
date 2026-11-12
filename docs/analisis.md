@@ -339,7 +339,7 @@ Se abre al tocar la cabecera de un tramo.
 ## 7. Tiempo real y arquitectura
 
 - **Backend:** Spring Boot 3, un solo JAR ejecutable.
-- **Base de datos:** H2 en archivo, junto al JAR. Sin Docker ni base de datos aparte.
+- **Base de datos:** H2 en archivo, junto al JAR. Sin base de datos aparte.
 - **Frontend:** Angular compilado y servido dentro del JAR.
 - **Tiempo real:** SSE (Server-Sent Events). El servidor calcula todo y envía el estado completo del rally con un número de versión. El cliente se resincroniza al reconectar.
 - **Autoridad:** el servidor calcula colores, orden, totales, diferencias y récords. El cliente solo renderiza.
