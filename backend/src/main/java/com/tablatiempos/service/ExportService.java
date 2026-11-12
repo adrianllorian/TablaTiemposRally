@@ -72,7 +72,7 @@ public class ExportService {
         Row subtitle = sheet.createRow(1);
         Cell subtitleCell = subtitle.createCell(0);
         String date = view.date() == null ? "" : " · " + view.date().format(DATE);
-        subtitleCell.setCellValue("Tabla de tiempos creado por Bochi" + date);
+        subtitleCell.setCellValue("Tabla de tiempos" + date);
         subtitleCell.setCellStyle(styles.subtitle);
         sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, lastColumn));
 
