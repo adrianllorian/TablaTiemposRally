@@ -1,6 +1,11 @@
-# Tabla Tiempos Rally
+<h1 align="center">Tabla Tiempos Rally</h1>
 
 <p align="center">
+  Lleva los tiempos de un rally de Assetto Corsa en directo, sin Excel ni Skype.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/github/v/release/adrianllorian/TablaTiemposRally?style=flat-square&label=versi%C3%B3n" alt="Versión">
   <img src="https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=openjdk&logoColor=white" alt="Java 21">
   <img src="https://img.shields.io/badge/Spring%20Boot-4.1.2-6DB33F?style=flat-square&logo=springboot&logoColor=white" alt="Spring Boot">
   <img src="https://img.shields.io/badge/Angular-22-DD0031?style=flat-square&logo=angular&logoColor=white" alt="Angular">
@@ -18,10 +23,6 @@
   <strong>Java 21+ · 70 MB · Windows / Linux / macOS</strong>
 </p>
 
-Aplicación web para llevar los tiempos de un rally de **Assetto Corsa** en directo, sustituyendo el clásico Excel compartido por Skype.
-
-Una sola URL para todos: los participantes entran con una contraseña, ven la tabla actualizarse en vivo y pueden editar tiempos, penalizaciones y retiradas. Incluye clasificación general, diferencias, récords históricos, historial de rallies, enlace de invitado en solo lectura y exportación a Excel.
-
 ---
 
 ## Vista previa
@@ -30,36 +31,13 @@ Una sola URL para todos: los participantes entran con una contraseña, ven la ta
   <img src="docs/screenshot.png" alt="Configuración inicial de Tabla Tiempos Rally" width="860">
 </p>
 
----
-
-## Índice
-
-- [Características](#características)
-- [Descargar y ejecutar](#descargar-y-ejecutar)
-- [Datos y copias de seguridad](#datos-y-copias-de-seguridad)
-- [Compartir con los participantes](#compartir-con-los-participantes)
-- [Stack técnico](#stack-técnico)
-- [Desarrollo](#desarrollo)
-- [Compilar el JAR definitivo](#compilar-el-jar-definitivo)
-- [Estructura del proyecto](#estructura-del-proyecto)
-- [Cómo funciona](#cómo-funciona)
-- [API principal](#api-principal)
-- [Contribuir](#contribuir)
-- [Publicar una versión en GitHub](#publicar-una-versión-en-github)
-- [Preguntas frecuentes](#preguntas-frecuentes)
-- [Licencia](#licencia)
-
----
-
 ## Características
 
 - **Un único rally activo** y un historial con todos los rallies anteriores.
 - **Tabla en vivo** mediante SSE: los cambios aparecen sin recargar.
 - **Clasificación automática** por tiempo total, con `EC` (en curso) y retirados al final.
 - **Tramos**: tiempos válidos, penalizaciones y retiradas.
-- **Penalizaciones dinámicas**:
-  - peor tiempo válido del tramo + X (30 s por defecto),
-  - o tiempo fijo.
+- **Penalizaciones dinámicas**: peor tiempo válido del tramo + X (30 s por defecto) o tiempo fijo.
 - **Colores automáticos**:
   - morado: mejor tiempo válido del tramo,
   - verde: tiempo válido,
@@ -73,48 +51,20 @@ Una sola URL para todos: los participantes entran con una contraseña, ven la ta
 - **Enlace de invitado** por rally, de solo lectura, sin contraseña.
 - **Exportación a Excel** con clasificación, colores y hoja de récords.
 - **Configuración inicial** en el primer arranque: contraseña y logo de la aplicación.
-- **Cambio de contraseña y logo** desde `Configuración → Ajustes de la aplicación`.
 - **Tema claro y oscuro**, diseño responsive y aviso de reconexión.
 - **Sin PWA**, sin instalación y sin tooltips: todo se ve en la tabla.
 
----
+## Descarga
 
-## Descargar y ejecutar
+Descarga siempre la última versión desde este enlace fijo:
 
-### Requisitos
+**[Tabla Tiempos Rally (última versión)](https://github.com/adrianllorian/TablaTiemposRally/releases/latest/download/tabla-tiempos-1.0.0.jar)**
 
-- **Java 21** o superior. Comprueba con:
-
-  ```bash
-  java -version
-  ```
-
-  Si no lo tienes, instala un JDK 21 (Temurin, Oracle, Microsoft OpenJDK, etc.).
-
-### Pasos
-
-1. Descarga el JAR desde la página de [Releases](https://github.com/adrianllorian/TablaTiemposRally/releases/latest) o directamente:
-   [`tabla-tiempos-1.0.0.jar`](https://github.com/adrianllorian/TablaTiemposRally/releases/latest/download/tabla-tiempos-1.0.0.jar)
-2. Crea una carpeta para la aplicación, por ejemplo `TablaTiempos`, y copia ahí el JAR.
-3. Abre una terminal en esa carpeta y ejecuta:
-
-   ```bash
-   java -jar tabla-tiempos-1.0.0.jar
-   ```
-
-4. Abre en el navegador:
-
-   ```text
-   http://localhost:8888
-   ```
-
-5. En el primer arranque la app pide:
-   - la **contraseña** que se usará para entrar,
-   - el **logo** de la aplicación.
-
-   El logo y la contraseña se guardan para toda la aplicación. Después se pueden cambiar en `Configuración → Ajustes de la aplicación`.
-
-Para detener el servidor, pulsa `Ctrl + C` en la terminal.
+- Archivo: `tabla-tiempos-1.0.0.jar`
+- Tamaño: 70,3 MB
+- Requisito: **Java 21 o superior**
+- Plataforma: Windows, Linux y macOS
+- No necesita base de datos externa: H2 va incluido.
 
 ### Verificar la descarga
 
@@ -124,17 +74,44 @@ SHA-256 del JAR:
 282A6AACF2A1B7BA24884ACB1BB4875106ABDCABAF168D993E28330806CB0C42
 ```
 
-### Cambiar el puerto
+Para comprobarlo en PowerShell:
 
-Por defecto usa el `8888`. Puedes cambiarlo al arrancar:
-
-```bash
-java -jar tabla-tiempos-1.0.0.jar --server.port=9090
+```powershell
+Get-FileHash ".\tabla-tiempos-1.0.0.jar" -Algorithm SHA256
 ```
 
-También se puede fijar en `backend/src/main/resources/application.properties` si compilas desde el código.
+## Ejecutar
 
----
+1. Descarga el JAR y colócalo en una carpeta donde puedas escribir, por ejemplo `TablaTiempos`.
+2. Necesitas **Java 21 o superior**. Comprueba con:
+
+```bash
+java -version
+```
+
+3. Arranca desde una terminal en esa carpeta:
+
+```bash
+java -jar tabla-tiempos-1.0.0.jar
+```
+
+4. Abre en el navegador:
+
+```text
+http://localhost:8888
+```
+
+Para detener el servidor, pulsa `Ctrl + C` en la terminal.
+
+### Primer arranque
+
+En el primer arranque la app pide:
+
+- la **contraseña** que se usará para entrar,
+- el **logo** de la aplicación.
+
+El logo y la contraseña se guardan para toda la aplicación. Después se pueden
+cambiar en `Configuración → Ajustes de la aplicación`.
 
 ## Datos y copias de seguridad
 
@@ -156,7 +133,7 @@ antiguos no se borran: siguen en la carpeta anterior.
 - Para empezar de cero (borrar rallies, récords, contraseña y logo), para la aplicación y elimina la carpeta `data/`.
 - No subas la carpeta `data/` a GitHub: contiene la contraseña cifrada, los rallies y el logo.
 
-### Sesión
+## Sesión
 
 La sesión dura **30 días** por defecto y la cookie también es persistente: si
 cierras y vuelves a abrir el navegador, la sesión se mantiene hasta que caduque
@@ -175,7 +152,15 @@ java -jar tabla-tiempos-1.0.0.jar --server.servlet.session.timeout=8h --server.s
 
 Valores habituales: `30m`, `2h`, `8h`, `1d`, `30d`.
 
----
+## Configuración
+
+Por defecto usa el puerto `8888`. Puedes cambiarlo al arrancar:
+
+```bash
+java -jar tabla-tiempos-1.0.0.jar --server.port=9090
+```
+
+También se puede fijar en `backend/src/main/resources/application.properties` si compilas desde el código.
 
 ## Compartir con los participantes
 
@@ -185,13 +170,15 @@ Valores habituales: `30m`, `2h`, `8h`, `1d`, `30d`.
 2. Abre el puerto `8888` en el cortafuegos de Windows.
 3. Comparte:
 
-   ```text
-   http://IP_DEL_SERVIDOR:8888
-   ```
+```text
+http://IP_DEL_SERVIDOR:8888
+```
 
 ### Por internet
 
-Para que funcione fuera de casa, publica el puerto mediante un proxy inverso con **HTTPS** (Caddy, Nginx, Cloudflare Tunnel, etc.). No expongas el puerto `8888` directamente a internet sin HTTPS.
+Para que funcione fuera de casa, publica el puerto mediante un proxy inverso con
+**HTTPS** (Caddy, Nginx, Cloudflare Tunnel, etc.). No expongas el puerto `8888`
+directamente a internet sin HTTPS.
 
 Dentro de la app, el botón **Invitar** genera un enlace de solo lectura para ese rally:
 
@@ -199,88 +186,29 @@ Dentro de la app, el botón **Invitar** genera un enlace de solo lectura para es
 https://tu-dominio/#/ver/TOKEN
 ```
 
-Quien lo abra verá la tabla en directo, sin contraseña, sin configuración, sin historial y sin récords.
+Quien lo abra verá la tabla en directo, sin contraseña, sin configuración, sin
+historial y sin récords.
 
----
+## Cómo funciona
 
-## Stack técnico
+- El **frontend Angular** se sirve desde el propio Spring Boot en producción.
+- El backend expone una API REST protegida por sesión.
+- La tabla se actualiza por **SSE** (`/api/rallies/{id}/events`): al guardar un tiempo, el servidor recalcula la clasificación y envía la vista completa a todos los clientes conectados.
+- Los cálculos de tiempos, penalizaciones, diferencias, colores, récords y estados se hacen **en el servidor**.
+- La contraseña se guarda como hash **BCrypt**; nunca se guarda en texto plano ni se envía al frontend.
+- El **logo** se guarda en `data/logo/` y se sirve desde `/api/public/logo`.
+- El **enlace de invitado** usa un token aleatorio por rally y solo permite lectura.
 
-| Capa | Tecnología |
-| --- | --- |
-| Frontend | Angular 22 (standalone components, signals) |
-| Backend | Spring Boot 4.1.2, Java 21 |
-| Base de datos | H2 en archivo |
-| Tiempo real | Server-Sent Events (SSE) |
-| Autenticación | Sesión con cookie HttpOnly + BCrypt |
-| Exportación | Apache POI (`.xlsx`) |
-| Build | Maven Wrapper + Angular CLI |
+## Compilar desde el código
 
----
-
-## Desarrollo
-
-### Requisitos
+Requisitos:
 
 - **JDK 21**.
-- **Node.js 22 o superior** y npm (el proyecto usa npm 11).
+- **Node.js 22 o superior** y npm.
 - Git.
 
-### 1. Backend
-
-```bash
-cd backend
-```
-
-Windows:
-
-```powershell
-.\mvnw.cmd spring-boot:run
-```
-
-Linux / macOS:
-
-```bash
-./mvnw spring-boot:run
-```
-
-El backend queda en `http://localhost:8888`.
-
-### 2. Frontend en modo desarrollo
-
-En otra terminal:
-
-```bash
-cd frontend
-npm install
-npm start
-```
-
-Abre `http://localhost:4200`. El servidor de Angular redirige `/api` al backend del `8888` mediante `proxy.conf.json`, así que los cambios del frontend se recargan al instante.
-
-### 3. Tests
-
-```bash
-cd backend
-./mvnw test
-```
-
-Windows:
-
-```powershell
-cd backend
-.\mvnw.cmd test
-```
-
-```bash
-cd frontend
-npm test
-```
-
----
-
-## Compilar el JAR definitivo
-
-El JAR incluye el frontend compilado dentro de `backend/src/main/resources/static`, de modo que un solo archivo sirve toda la aplicación.
+El JAR incluye el frontend compilado dentro de `backend/src/main/resources/static`,
+de modo que un solo archivo sirve toda la aplicación.
 
 ### 1. Compilar el frontend
 
@@ -321,24 +249,31 @@ Windows:
 .\mvnw.cmd -DskipTests package
 ```
 
-El JAR se genera en:
-
-```text
-backend/target/tabla-tiempos-1.0.0.jar
-```
-
-Y se ejecuta igual que el descargado:
+El JAR se genera en `backend/target/tabla-tiempos-1.0.0.jar` y se ejecuta igual que el descargado:
 
 ```bash
 java -jar backend/target/tabla-tiempos-1.0.0.jar
 ```
 
----
+### Publicar una release
+
+1. Compila el JAR definitivo y pruébalo.
+2. Crea el tag de la versión:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+3. En GitHub, entra en **Releases → Draft a new release**, selecciona el tag y adjunta el JAR.
+4. Publica la release.
+
+No hagas `git add` del JAR: cada compilación añade unos 70 MB al historial del repositorio.
 
 ## Estructura del proyecto
 
 ```text
-TablaTiemposAssetoCorsa/
+TablaTiemposRally/
 ├── backend/                  # Spring Boot
 │   ├── src/main/java/        # dominio, servicios, controladores, SSE
 │   ├── src/main/resources/
@@ -351,182 +286,36 @@ TablaTiemposAssetoCorsa/
 │   ├── src/styles.css
 │   ├── proxy.conf.json
 │   └── package.json
-├── docs/
-│   └── analisis.md           # especificación funcional del proyecto
-├── mockup/
-│   └── index.html            # maqueta visual original
-├── tools/                    # JDK local de desarrollo (no se sube)
+├── docs/screenshot.png
+├── mockup/index.html
+├── LICENSE
 └── README.md
 ```
 
----
+## Tecnologías
 
-## Cómo funciona
+| Capa | Tecnología |
+| --- | --- |
+| Frontend | Angular 22 (standalone components, signals) |
+| Backend | Spring Boot 4.1.2, Java 21 |
+| Base de datos | H2 en archivo |
+| Tiempo real | Server-Sent Events (SSE) |
+| Autenticación | Sesión con cookie HttpOnly + BCrypt |
+| Exportación | Apache POI (`.xlsx`) |
+| Build | Maven Wrapper + Angular CLI |
 
-- El **frontend Angular** se sirve desde el propio Spring Boot en producción.
-- El backend expone una API REST protegida por sesión.
-- La tabla se actualiza por **SSE** (`/api/rallies/{id}/events`): al guardar un tiempo, el servidor recalcula la clasificación y envía la vista completa a todos los clientes conectados.
-- Los cálculos de tiempos, penalizaciones, diferencias, colores, récords y estados se hacen **en el servidor** (`RallyViewService`, `RecordService`).
-- La contraseña se guarda como hash **BCrypt** en la tabla `app_settings`; nunca se guarda en texto plano ni se envía al frontend.
-- El **logo** se guarda en `data/logo/` y se sirve desde `/api/public/logo`.
-- El **primer arranque** se detecta con `/api/public/status`; si no hay configuración, la app muestra el formulario de contraseña y logo.
-- El **enlace de invitado** usa un token aleatorio por rally y solo permite lectura.
+## Seguridad
 
----
-
-## API principal
-
-| Método | Ruta | Descripción |
-| --- | --- | --- |
-| `POST` | `/api/auth/login` | Iniciar sesión con la contraseña |
-| `POST` | `/api/auth/logout` | Cerrar sesión |
-| `GET` | `/api/auth/me` | Comprobar sesión |
-| `GET` | `/api/public/status` | Estado de configuración inicial |
-| `POST` | `/api/public/setup` | Configurar contraseña y logo la primera vez |
-| `GET` | `/api/public/logo` | Logo de la aplicación |
-| `GET` | `/api/rallies` | Listado e historial de rallies |
-| `POST` | `/api/rallies` | Crear rally |
-| `GET` | `/api/rallies/{id}` | Vista completa del rally |
-| `PUT` | `/api/rallies/{id}/config` | Editar configuración |
-| `PUT` | `/api/rallies/{id}/results/{stageId}/{entrantId}` | Guardar o borrar un resultado |
-| `POST` | `/api/rallies/{id}/entrants/{entrantId}/retire` | Retirar piloto |
-| `DELETE` | `/api/rallies/{id}/entrants/{entrantId}/retire` | Deshacer retirada |
-| `POST` | `/api/rallies/{id}/reopen` | Reabrir un rally terminado |
-| `GET` | `/api/rallies/{id}/export` | Exportar el rally a Excel |
-| `GET` | `/api/rallies/{id}/events` | SSE con la tabla en vivo |
-| `GET` | `/api/records` | Récords históricos |
-| `GET` | `/api/dictionaries` | Tramos, coches y pilotos para autocompletar |
-| `GET` | `/api/settings` | Ajustes de la aplicación |
-| `PUT` | `/api/settings/password` | Cambiar la contraseña |
-| `POST` | `/api/settings/logo` | Cambiar el logo |
-| `GET` | `/api/public/rallies/{token}` | Vista de invitado en solo lectura |
-
----
-
-## Contribuir
-
-Las contribuciones son bienvenidas, sobre todo si has usado la app en un rally real y has encontrado un fallo o una mejora clara.
-
-### Antes de empezar
-
-- Para cambios grandes, abre primero un **issue** y explica qué quieres cambiar.
-- Para fallos, incluye:
-  - qué esperabas que pasara,
-  - qué pasó realmente,
-  - pasos para reproducirlo,
-  - navegador y sistema operativo,
-  - captura o texto del error si lo hay.
-
-### Flujo de trabajo
-
-1. Haz un fork del repositorio.
-2. Crea una rama:
-
-   ```bash
-   git checkout -b feat/mi-mejora
-   ```
-
-   o
-
-   ```bash
-   git checkout -b fix/mi-correccion
-   ```
-
-3. Haz los cambios y pruébalos en local.
-4. Comprueba que compilan backend y frontend:
-
-   ```bash
-   cd backend && ./mvnw -DskipTests package
-   cd ../frontend && npm run build
-   ```
-
-5. Abre una **pull request** explicando el cambio y cómo lo has probado.
-
-### Criterios del proyecto
-
-- La interfaz está en **español**.
-- **Sin tooltips**: la información importante debe verse en la tabla, la cabecera del tramo o el panel de detalle.
-- Mantener los colores y el estilo visual existentes.
-- Los cálculos de clasificación, diferencias, penalizaciones y récords van en el **backend**.
-- Angular con componentes **standalone** y **signals**.
-- No añadir dependencias sin necesidad.
-- No subir a Git:
-  - `backend/data/` (base de datos y logo),
-  - `backend/target/`,
-  - `frontend/node_modules/`, `frontend/dist/` ni `frontend/.angular/`,
-  - `tools/` (JDK local),
-  - el `.jar` compilado.
-
----
-
-## Publicar una versión en GitHub
-
-**No es recomendable hacer `git add` del JAR.** Aunque quepa en GitHub, cada compilación añade unos 70 MB al historial del repositorio y acaba haciendo el clonado muy pesado.
-
-Lo recomendado es adjuntar el JAR a una **Release**:
-
-1. Compila el JAR definitivo (ver arriba).
-2. Crea un tag:
-
-   ```bash
-   git tag v1.0.0
-   git push origin v1.0.0
-   ```
-
-3. En GitHub, entra en **Releases → Draft a new release**, selecciona el tag y adjunta el archivo:
-
-   ```text
-   backend/target/tabla-tiempos-1.0.0.jar
-   ```
-
-4. Publica la release.
-
-Así los usuarios pueden descargar el JAR desde **Releases** sin llenar el repositorio de binarios, y el código fuente sigue siendo ligero para quien quiera contribuir.
-
-También se puede automatizar con GitHub Actions en el futuro: compilar en cada tag y adjuntar el JAR a la release automáticamente.
-
----
-
-## Preguntas frecuentes
-
-**¿Dónde está la contraseña?**  
-No está en el código. Se elige en el primer arranque y se guarda cifrada con BCrypt en la base de datos.
-
-**¿Puedo cambiar la contraseña o el logo?**  
-Sí: `Configuración → Ajustes de la aplicación`.
-
-**¿Cuántos rallies puede haber a la vez?**  
-Solo uno activo. Al crear otro, el anterior pasa al historial y se puede consultar, duplicar, reabrir, exportar o borrar.
-
-**¿Se puede ver sin contraseña?**  
-Sí, con el enlace de invitado de cada rally. Es de solo lectura y no da acceso a configuración, historial ni récords.
-
-**¿Funciona en el móvil?**  
-La interfaz es responsive y se puede usar desde el navegador del móvil. No hay una vista móvil específica de “mi tiempo”.
-
-**¿Es una PWA?**  
-No. Es una aplicación web normal: necesita el servidor encendido.
-
-**¿Los datos se pierden al actualizar el JAR?**  
-No, si mantienes la carpeta `data/` junto al nuevo JAR.
-
-**¿Cómo hago una copia de seguridad?**  
-Para la aplicación y copia la carpeta `data/`.
-
-**¿La exportación a Excel incluye los récords?**  
-Sí, el `.xlsx` tiene una hoja `Rally` con la clasificación y una hoja `Récords` con el top 5 por tramo.
-
-**¿Se puede usar sin internet?**  
-Sí, en local o en red local. Para jugar con amigos remotos necesitas publicar el servidor con HTTPS.
-
----
+- Contraseña con hash BCrypt y sesión con cookie `HttpOnly`.
+- No se versionan la base de datos, los rallies, el logo ni la contraseña.
+- Para exponerlo fuera de la red local, usa un proxy inverso con HTTPS.
 
 ## Licencia
 
-Este proyecto se distribuye bajo la **licencia MIT**. Puedes usar, copiar, modificar y compartir el código, siempre que mantengas el aviso de copyright y el texto de la licencia.
-
-Consulta el archivo [`LICENSE`](LICENSE) para ver el texto completo.
+Distribuido bajo **MIT License**. Consulta [LICENSE](LICENSE).
 
 ---
 
-Hecho con cariño para los rallies de Assetto Corsa. 🏁
+<p align="center">
+  Copyright © 2026 Adrian Llorian
+</p>
