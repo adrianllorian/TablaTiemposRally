@@ -97,7 +97,7 @@
       [view]="v"
       [editable]="false"
       [showGaps]="showGaps()"
-      (openStage)="stage.set($event)"
+      (openStage)="openStage($event)"
     />
 
     <div class="legend">
@@ -114,11 +114,11 @@
     <footer class="footer">Tabla de tiempos · vista de invitado · solo lectura</footer>
 
     @if (stage(); as selectedStage) {
-      <app-stage-panel [view]="v" [stage]="selectedStage" (close)="stage.set(null)" />
+      <app-stage-panel [view]="v" [stage]="selectedStage" (close)="closeStage()" />
     }
 
     @if (toast()) {
-      <div class="toast show">{{ toast() }}</div>
+      <div class="toast show" [class.record]="toastRecord()">{{ toast() }}</div>
     }
   </div>
 }

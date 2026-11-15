@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Api } from './api';
 import { Clock } from './clock';
@@ -77,10 +77,19 @@ export class Home implements OnInit, OnDestroy {
   readonly historyFilter = signal('');
   readonly dictionaries = signal<Dictionaries>({ stages: [], cars: [], pilots: [] });
 
-  readonly stage = signal<Stage | null>(null);
+  readonly stageId = signal<number | null>(null);
+  readonly stage = computed<Stage | null>(() => {
+    const id = this.stageId();
+    return id == null ? null : (this.view()?.stages.find((item) => item.id === id) ?? null);
+  });
   readonly edit = signal<EditTarget | null>(null);
   readonly editTime = signal('');
   readonly editError = signal('');
+  readonly editPreview = computed(() => parseTime(this.editTime()));
+  readonly editPreviewValid = computed(() => {
+    const millis = this.editPreview();
+    return millis != null && millis > 0 ? millis : null;
+  });
 
   readonly configOpen = signal(false);
   readonly configMode = signal<ConfigMode>('edit');
@@ -138,6 +147,31 @@ export class Home implements OnInit, OnDestroy {
 
   private readonly onlineHandler = () => this.online.set(true);
   private readonly offlineHandler = () => this.online.set(false);
+  private lastLiveVersion = -1;
+  private lastRecordRallyId: number | null = null;
+  private readonly lastRecords = new Map<number, number | null>();
+
+  constructor() {
+    effect(() => {
+      const view = this.view();
+      if (!view) {
+        this.lastLiveVersion = -1;
+        this.lastRecordRallyId = null;
+        this.lastRecords.clear();
+        return;
+      }
+      if (view.version === this.lastLiveVersion) {
+        return;
+      }
+      this.lastLiveVersion = view.version;
+      this.checkRecordAlert(view);
+      if (this.tab() === 'records') {
+        void this.loadRecords();
+      } else if (this.tab() === 'history') {
+        void this.loadHistory();
+      }
+    });
+  }
 
   ngOnInit(): void {
     window.addEventListener('online', this.onlineHandler);
@@ -484,11 +518,15 @@ export class Home implements OnInit, OnDestroy {
       return;
     }
     this.editError.set('');
+    if (kind === 'PENALTY' && target.stage.type === 'SHAKEDOWN') {
+      this.editError.set('El shakedown no admite penalizaciones.');
+      return;
+    }
     try {
       if (kind === 'VALID') {
         const millis = parseTime(this.editTime());
         if (millis == null || millis <= 0) {
-          this.editError.set('Formato de tiempo no válido. Usa 00.00.000 o 123456.');
+          this.editError.set('Formato no válido. Prueba 02.05.000, 2:05 o 205000.');
           return;
         }
         await this.store.setResult(view.id, target.stage.id, target.row.entrantId, {
@@ -519,6 +557,10 @@ export class Home implements OnInit, OnDestroy {
     if (!target || !view) {
       return;
     }
+    if (target.stage.type === 'SHAKEDOWN') {
+      this.editError.set('El shakedown no admite retiradas.');
+      return;
+    }
     try {
       await this.store.retire(view.id, target.row.entrantId, target.stage.id);
       this.closeEdit();
@@ -544,7 +586,20 @@ export class Home implements OnInit, OnDestroy {
   }
 
   openStage(stage: Stage): void {
-    this.stage.set(stage);
+    this.stageId.set(stage.id);
+  }
+
+  closeStage(): void {
+    this.stageId.set(null);
+  }
+
+  selectTab(tab: Tab): void {
+    this.tab.set(tab);
+    if (tab === 'records') {
+      void this.loadRecords();
+    } else if (tab === 'history') {
+      void this.loadHistory();
+    }
   }
 
   todayIso(): string {
@@ -612,6 +667,29 @@ export class Home implements OnInit, OnDestroy {
       clearTimeout(this.toastTimer);
     }
     this.toastTimer = setTimeout(() => this.toast.set(''), 3400);
+  }
+
+  private checkRecordAlert(view: RallyView): void {
+    if (view.id !== this.lastRecordRallyId) {
+      this.lastRecordRallyId = view.id;
+      this.lastRecords.clear();
+      for (const stage of view.stages) {
+        this.lastRecords.set(stage.id, stage.recordMs);
+      }
+      return;
+    }
+    for (const stage of view.stages) {
+      const previous = this.lastRecords.get(stage.id);
+      this.lastRecords.set(stage.id, stage.recordMs);
+      if (stage.recordMs != null && previous !== stage.recordMs) {
+        if (previous == null || stage.recordMs < previous) {
+          this.showToast(
+            `🏆 ¡Récord! ${stage.recordHolder} · ${formatTime(stage.recordMs)} en ${stage.name}`,
+            'record',
+          );
+        }
+      }
+    }
   }
 
   private async afterLogin(): Promise<void> {

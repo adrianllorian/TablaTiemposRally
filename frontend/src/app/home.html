@@ -140,9 +140,9 @@
     </header>
 
     <nav class="tabs">
-      <button class="tab" type="button" [class.active]="tab() === 'rally'" (click)="tab.set('rally')">Rally</button>
-      <button class="tab" type="button" [class.active]="tab() === 'records'" (click)="tab.set('records')">Récords</button>
-      <button class="tab" type="button" [class.active]="tab() === 'history'" (click)="tab.set('history')">Historial</button>
+      <button class="tab" type="button" [class.active]="tab() === 'rally'" (click)="selectTab('rally')">Rally</button>
+      <button class="tab" type="button" [class.active]="tab() === 'records'" (click)="selectTab('records')">Récords</button>
+      <button class="tab" type="button" [class.active]="tab() === 'history'" (click)="selectTab('history')">Historial</button>
     </nav>
 
     <main>
@@ -347,7 +347,7 @@
     </footer>
 
     @if (stage(); as selectedStage) {
-      <app-stage-panel [view]="view()!" [stage]="selectedStage" (close)="stage.set(null)" />
+      <app-stage-panel [view]="view()!" [stage]="selectedStage" (close)="closeStage()" />
     }
 
     @if (edit(); as target) {
@@ -369,18 +369,34 @@
               <input
                 id="editTime"
                 name="editTime"
-                placeholder="00.00.000"
+                placeholder="02.05.000 o 205000"
                 [ngModel]="editTime()"
                 (ngModelChange)="editTime.set($event)"
                 [ngModelOptions]="{ standalone: true }"
               />
-              <p class="hint">Puedes escribir 1.23.456 o 123456. El 0 no es un tiempo válido.</p>
+              <p class="hint">
+                Formatos: 02.05.000, 2:05.000, 2:05, 205000 o 1250000 (12:50.000).
+              </p>
+              @if (editTime().trim()) {
+                <p class="hint">
+                  @if (editPreviewValid(); as preview) {
+                    Se guardará como <b>{{ preview | raceTime }}</b>.
+                  } @else {
+                    Formato no reconocido.
+                  }
+                </p>
+              }
+              @if (target.stage.type === 'SHAKEDOWN') {
+                <p class="hint">El shakedown no admite penalizaciones ni retiradas.</p>
+              }
             </div>
             <div class="login-error">{{ editError() }}</div>
             <div class="modal-actions" style="flex-wrap: wrap">
               <button class="btn" type="button" (click)="saveEdit('CLEAR')">Vaciar</button>
-              <button class="btn" type="button" (click)="saveEdit('PENALTY')">Penalización</button>
-              <button class="btn" type="button" (click)="retireTarget()">Retirar</button>
+              @if (target.stage.type !== 'SHAKEDOWN') {
+                <button class="btn" type="button" (click)="saveEdit('PENALTY')">Penalización</button>
+                <button class="btn" type="button" (click)="retireTarget()">Retirar</button>
+              }
               <button class="btn primary" type="button" (click)="saveEdit('VALID')">Guardar tiempo</button>
             </div>
           } @else {

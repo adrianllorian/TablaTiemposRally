@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/adrianllorian/TablaTiemposRally/releases/latest/download/tabla-tiempos-1.0.0.jar">
+  <a href="https://github.com/adrianllorian/TablaTiemposRally/releases/latest/download/tabla-tiempos-1.0.1.jar">
     <img src="https://img.shields.io/badge/Descargar_JAR-2ea44f?style=for-the-badge&logo=java&logoColor=white" alt="Descargar JAR">
   </a>
 </p>
@@ -34,7 +34,7 @@
 ## Características
 
 - **Un único rally activo** y un historial con todos los rallies anteriores.
-- **Tabla en vivo** mediante SSE: los cambios aparecen sin recargar.
+- **Tabla en vivo** mediante SSE, con refresco de seguridad si un proxy inverso bloquea el streaming.
 - **Clasificación automática** por tiempo total, con `EC` (en curso) y retirados al final.
 - **Tramos**: tiempos válidos, penalizaciones y retiradas.
 - **Penalizaciones dinámicas**: peor tiempo válido del tramo + X (30 s por defecto) o tiempo fijo.
@@ -45,7 +45,7 @@
   - gris: en curso, retirado o tramo anulado,
   - corona: récord histórico.
 - **Récords por nombre de tramo**, no por `TC-x`, con top 5, buscador y actualización en vivo.
-- **Shakedown opcional** con nombre: entra en récords, pero no suma al rally.
+- **Shakedown opcional** con nombre: entra en récords, no suma al rally y no admite penalizaciones ni retiradas.
 - **Diferencias** con el líder y con el piloto anterior, con referencia de posición y nombre.
 - **Reloj y cuenta atrás de 20 s** sincronizados con el reloj real.
 - **Enlace de invitado** por rally, de solo lectura, sin contraseña.
@@ -54,13 +54,22 @@
 - **Tema claro y oscuro**, diseño responsive y aviso de reconexión.
 - **Sin PWA**, sin instalación y sin tooltips: todo se ve en la tabla.
 
+## Novedades de la 1.0.1
+
+- Tiempos sin puntos y formatos más flexibles: `2:05`, `2.05`, `205000`, `1250000`, etc.
+- El shakedown ya no ofrece penalizaciones ni retiradas, porque no las admite.
+- Actualización en vivo reforzada: SSE con heartbeat y refresco de seguridad cada 5 s si un proxy bloquea el streaming.
+- El panel de tramo y la página de récords se actualizan sin refrescar.
+- Aviso visible al batir un récord, también en la vista de invitado.
+- Tests de formatos de tiempo y del refresco de seguridad.
+
 ## Descarga
 
 Descarga siempre la última versión desde este enlace fijo:
 
-**[Tabla Tiempos Rally (última versión)](https://github.com/adrianllorian/TablaTiemposRally/releases/latest/download/tabla-tiempos-1.0.0.jar)**
+**[Tabla Tiempos Rally (última versión)](https://github.com/adrianllorian/TablaTiemposRally/releases/latest/download/tabla-tiempos-1.0.1.jar)**
 
-- Archivo: `tabla-tiempos-1.0.0.jar`
+- Archivo: `tabla-tiempos-1.0.1.jar`
 - Tamaño: 70,3 MB
 - Requisito: **Java 21 o superior**
 - Plataforma: Windows, Linux y macOS
@@ -71,13 +80,13 @@ Descarga siempre la última versión desde este enlace fijo:
 SHA-256 del JAR:
 
 ```text
-282A6AACF2A1B7BA24884ACB1BB4875106ABDCABAF168D993E28330806CB0C42
+8FD07E5EB519D4B1165C9A78CBAC38FC893A7C222B8807B574F621CC26E8B63C
 ```
 
 Para comprobarlo en PowerShell:
 
 ```powershell
-Get-FileHash ".\tabla-tiempos-1.0.0.jar" -Algorithm SHA256
+Get-FileHash ".\tabla-tiempos-1.0.1.jar" -Algorithm SHA256
 ```
 
 ## Ejecutar
@@ -92,7 +101,7 @@ java -version
 3. Arranca desde una terminal en esa carpeta:
 
 ```bash
-java -jar tabla-tiempos-1.0.0.jar
+java -jar tabla-tiempos-1.0.1.jar
 ```
 
 4. Abre en el navegador:
@@ -141,13 +150,13 @@ o pulses **Salir**. Puedes cambiarla con `SESSION_TIMEOUT`:
 
 ```powershell
 $env:SESSION_TIMEOUT = "8h"
-java -jar tabla-tiempos-1.0.0.jar
+java -jar tabla-tiempos-1.0.1.jar
 ```
 
 O con los dos argumentos:
 
 ```powershell
-java -jar tabla-tiempos-1.0.0.jar --server.servlet.session.timeout=8h --server.servlet.session.cookie.max-age=8h
+java -jar tabla-tiempos-1.0.1.jar --server.servlet.session.timeout=8h --server.servlet.session.cookie.max-age=8h
 ```
 
 Valores habituales: `30m`, `2h`, `8h`, `1d`, `30d`.
@@ -157,7 +166,7 @@ Valores habituales: `30m`, `2h`, `8h`, `1d`, `30d`.
 Por defecto usa el puerto `8888`. Puedes cambiarlo al arrancar:
 
 ```bash
-java -jar tabla-tiempos-1.0.0.jar --server.port=9090
+java -jar tabla-tiempos-1.0.1.jar --server.port=9090
 ```
 
 También se puede fijar en `backend/src/main/resources/application.properties` si compilas desde el código.
@@ -188,6 +197,26 @@ https://tu-dominio/#/ver/TOKEN
 
 Quien lo abra verá la tabla en directo, sin contraseña, sin configuración, sin
 historial y sin récords.
+
+### SSE y proxy inverso
+
+La app envía las cabeceras `X-Accel-Buffering: no` y `Cache-Control: no-cache`,
+además de un heartbeat cada 15 segundos y un refresco de seguridad cada 5 segundos.
+Aun así, si usas Nginx, asegúrate de no bufferizar el stream:
+
+```nginx
+location /api/ {
+    proxy_pass http://127.0.0.1:8888;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_buffering off;
+    proxy_read_timeout 3600s;
+}
+```
+
+Con Caddy o Cloudflare Tunnel no suele hacer falta nada especial, pero el refresco
+de seguridad mantiene la tabla actualizada aunque el SSE quede bloqueado.
 
 ## Cómo funciona
 
@@ -249,10 +278,10 @@ Windows:
 .\mvnw.cmd -DskipTests package
 ```
 
-El JAR se genera en `backend/target/tabla-tiempos-1.0.0.jar` y se ejecuta igual que el descargado:
+El JAR se genera en `backend/target/tabla-tiempos-1.0.1.jar` y se ejecuta igual que el descargado:
 
 ```bash
-java -jar backend/target/tabla-tiempos-1.0.0.jar
+java -jar backend/target/tabla-tiempos-1.0.1.jar
 ```
 
 ### Publicar una release
@@ -261,8 +290,8 @@ java -jar backend/target/tabla-tiempos-1.0.0.jar
 2. Crea el tag de la versión:
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag v1.0.1
+git push origin v1.0.1
 ```
 
 3. En GitHub, entra en **Releases → Draft a new release**, selecciona el tag y adjunta el JAR.

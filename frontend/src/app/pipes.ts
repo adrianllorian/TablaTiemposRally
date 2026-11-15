@@ -29,38 +29,72 @@ export function parseTime(raw: string): number | null {
   if (!raw) {
     return null;
   }
-  const value = raw.trim();
+  const value = raw.trim().replace(/\s+/g, ' ');
   if (!value) {
     return null;
   }
 
-  if (/^\d{5,6}$/.test(value)) {
-    const digits = value.padStart(6, '0');
-    const m = Number(digits.slice(0, digits.length - 5));
-    const s = Number(digits.slice(-5, -3));
-    const t = Number(digits.slice(-3));
-    return m * 60000 + s * 1000 + t;
+  // Entrada rápida sin separadores:
+  // 123456 -> 1:23.456 | 1250000 -> 12:50.000 | 205 -> 2:05 | 45 -> 45 s
+  if (/^\d+$/.test(value)) {
+    if (value.length >= 5 && value.length <= 8) {
+      const digits = value.padStart(6, '0');
+      const m = Number(digits.slice(0, digits.length - 5));
+      const s = Number(digits.slice(-5, -3));
+      const t = Number(digits.slice(-3));
+      if (Number.isNaN(m) || Number.isNaN(s) || Number.isNaN(t) || s >= 60) {
+        return null;
+      }
+      return m * 60000 + s * 1000 + t;
+    }
+    if (value.length === 3 || value.length === 4) {
+      const m = Number(value.slice(0, -2));
+      const s = Number(value.slice(-2));
+      if (Number.isNaN(m) || Number.isNaN(s) || s >= 60) {
+        return null;
+      }
+      return m * 60000 + s * 1000;
+    }
+    if (value.length <= 2) {
+      return Number(value) * 1000;
+    }
+    return null;
   }
 
-  const parts = value.split(/[.:]/).map((part) => part.trim());
+  const hasColon = value.includes(':');
+  const parts = value.split(/[.:,\s]+/).filter(Boolean);
+  if (parts.length < 2 || parts.length > 3) {
+    return null;
+  }
+
   if (parts.length === 2) {
-    const s = Number(parts[0]);
-    const t = Number(parts[1].padEnd(3, '0').slice(0, 3));
-    if (Number.isNaN(s) || Number.isNaN(t)) {
+    const second = parts[1];
+    // "2:05" o "2.05" con dos cifras se entiende como minutos:segundos.
+    // "23.456" o "125.000" se entiende como segundos.milésimas.
+    const minutesSeconds = hasColon || (second.length === 2 && parts[0].length <= 2);
+    const first = Number(parts[0]);
+    if (minutesSeconds) {
+      const seconds = Number(second);
+      if (Number.isNaN(first) || Number.isNaN(seconds) || seconds >= 60) {
+        return null;
+      }
+      return first * 60000 + seconds * 1000;
+    }
+    const seconds = Number(parts[0]);
+    const millis = Number(second.padEnd(3, '0').slice(0, 3));
+    if (Number.isNaN(seconds) || Number.isNaN(millis)) {
       return null;
     }
-    return s * 1000 + t;
+    return seconds * 1000 + millis;
   }
-  if (parts.length === 3) {
-    const m = Number(parts[0]);
-    const s = Number(parts[1]);
-    const t = Number(parts[2].padEnd(3, '0').slice(0, 3));
-    if (Number.isNaN(m) || Number.isNaN(s) || Number.isNaN(t)) {
-      return null;
-    }
-    return m * 60000 + s * 1000 + t;
+
+  const m = Number(parts[0]);
+  const s = Number(parts[1]);
+  const t = Number(parts[2].padEnd(3, '0').slice(0, 3));
+  if (Number.isNaN(m) || Number.isNaN(s) || Number.isNaN(t) || s >= 60) {
+    return null;
   }
-  return null;
+  return m * 60000 + s * 1000 + t;
 }
 
 export function formatDateLabel(value: string | null | undefined): string {

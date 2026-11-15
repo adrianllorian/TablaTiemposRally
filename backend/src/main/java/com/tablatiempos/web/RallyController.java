@@ -7,6 +7,7 @@ import com.tablatiempos.dto.ResultRequest;
 import com.tablatiempos.service.RallyService;
 import com.tablatiempos.service.RallyViewService;
 import com.tablatiempos.sse.RallyEventService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +49,8 @@ public class RallyController {
     }
 
     @GetMapping(value = "/{id}/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter events(@PathVariable Long id) {
+    public SseEmitter events(@PathVariable Long id, HttpServletResponse response) {
+        prepareSseResponse(response);
         RallyView view = viewService.view(id);
         SseEmitter emitter = eventService.subscribe(id);
         eventService.send(emitter, view);
@@ -99,5 +101,10 @@ public class RallyController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         rallyService.delete(id);
+    }
+
+    private void prepareSseResponse(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-cache, no-transform");
+        response.setHeader("X-Accel-Buffering", "no");
     }
 }

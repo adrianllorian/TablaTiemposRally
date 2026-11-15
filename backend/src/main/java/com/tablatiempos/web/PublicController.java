@@ -5,6 +5,7 @@ import com.tablatiempos.dto.RallyView;
 import com.tablatiempos.service.AppSettingsService;
 import com.tablatiempos.service.RallyViewService;
 import com.tablatiempos.sse.RallyEventService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -36,7 +37,9 @@ public class PublicController {
     }
 
     @GetMapping(value = "/rallies/{token}/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter events(@PathVariable String token) {
+    public SseEmitter events(@PathVariable String token, HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-cache, no-transform");
+        response.setHeader("X-Accel-Buffering", "no");
         RallyView view = viewService.viewByToken(token);
         SseEmitter emitter = eventService.subscribe(view.id());
         eventService.send(emitter, view);
